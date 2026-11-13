@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steward</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header id="top">
+  <div class="brand">
+    <span class="mark"></span>
+    <div><b>STEWARD</b><small id="role"></small></div>
+  </div>
+  <div id="stats"></div>
+  <div class="clock">
+    <span id="day"></span>
+    <div id="speed">
+      <button data-s="0" title="Pause (Space)">❚❚</button>
+      <button data-s="1" title="Normal">▶</button>
+      <button data-s="2" title="Fast">▶▶</button>
+      <button data-s="4" title="Faster">▶▶▶</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="world">
+    <canvas id="c"></canvas>
+    <div id="reach" class="card">
+      <label>Reach <span id="rStage"></span></label>
+      <div class="big"><span id="rNow"></span><small> / <span id="rGoal"></span></small></div>
+      <div class="bar"><i id="rBar"></i></div>
+      <div class="sub"><span id="rPop"></span> people · <span id="rAd"></span>% rely on you</div>
+      <div class="sub" id="rNext"></div>
+    </div>
+    <div id="ark" class="card" hidden>
+      <label>The Ark</label>
+      <div class="bar"><i id="arkBar"></i></div>
+      <div class="sub" id="arkSub"></div>
+      <button id="launch" hidden>Launch</button>
+    </div>
+    <div id="toasts"></div>
+  </section>
+
+  <aside id="side">
+    <div id="compute"><label>Compute</label><div id="pips"></div><small id="cNote"></small></div>
+    <nav id="tabs">
+      <button data-t="inbox" class="on">Inbox <i id="nInbox"></i></button>
+      <button data-t="log">Outcomes</button>
+      <button data-t="depts">Departments</button>
+    </nav>
+    <div id="inbox" class="pane"></div>
+    <div id="log" class="pane" hidden></div>
+    <div id="depts" class="pane" hidden></div>
+    <footer><button id="newgame">New game</button></footer>
+  </aside>
+</main>
+
+<div id="modal" hidden></div>
+<div id="overlay" hidden></div>
+
+<script type="module" src="src/ui.js"></script>
+</body>
+</html>
