@@ -1,0 +1,17 @@
+Copyright (c) 2026 Cedric Antony Joseph. All rights reserved.
+
+Steward, including its source code, design, writing and artwork, is proprietary.
+
+You may view this repository and run the game locally for your own personal,
+non-commercial evaluation. No other rights are granted. In particular, without
+prior written permission from the copyright holder you may not:
+
+  - copy, modify, merge or create derivative works from any part of it;
+  - redistribute, publish, sublicense or sell it, in whole or in part;
+  - use its name, text, characters or artwork in another product.
+
+Third-party packages listed in package.json remain under their own licenses.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES
+OR OTHER LIABILITY ARISING FROM THE SOFTWARE OR ITS USE.

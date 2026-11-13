@@ -1,4 +1,5 @@
 // All static game content: categories, stages, people names and the queries.
+import { MORE } from './content-more.js';
 
 export const CATS = {
   agri:   { label: 'Food',      stat: 'food',   color: '#9bcf5a', bld: 'farm',   dept: 'Agriculture' },
@@ -6,12 +7,16 @@ export const CATS = {
   eco:    { label: 'Ecology',   stat: 'eco',    color: '#3fbf9a', bld: 'grove',  dept: 'Environment' },
   edu:    { label: 'Knowledge', stat: 'know',   color: '#6fa8f5', bld: 'school', dept: 'Learning' },
   civic:  { label: 'Cohesion',  stat: 'bond',   color: '#e9b44c', bld: 'hall',   dept: 'Civic Affairs' },
+  infra:  { label: 'Infrastructure', stat: 'infra', color: '#9fb0c8', bld: 'works', dept: 'Works' },
+  safety: { label: 'Safety',    stat: 'safe',   color: '#f08a4b', bld: 'watch',  dept: 'Wardens' },
+  personal:{ label: 'Personal', stat: null,     color: '#c79bf2', bld: 'home',   dept: 'Counsel' },
   council:{ label: 'Council',   stat: null,     color: '#f3ead7', bld: 'hall',   dept: 'Council' },
 };
 
-export const STATS = ['food', 'health', 'eco', 'know', 'bond'];
-export const STAT_LABEL = { food: 'Food', health: 'Health', eco: 'Ecology', know: 'Knowledge', bond: 'Cohesion', trust: 'Trust', pop: '% Population' };
-export const STAT_COLOR = { food: '#9bcf5a', health: '#f0736a', eco: '#3fbf9a', know: '#6fa8f5', bond: '#e9b44c' };
+export const STATS = ['food', 'health', 'eco', 'know', 'bond', 'infra', 'safe'];
+export const TOPICS = ['agri', 'health', 'eco', 'edu', 'civic', 'infra', 'safety', 'personal'];
+export const STAT_LABEL = { food: 'Food', health: 'Health', eco: 'Ecology', know: 'Knowledge', bond: 'Cohesion', infra: 'Infrastructure', safe: 'Safety', trust: 'Trust', pop: '% Population' };
+export const STAT_COLOR = { food: '#9bcf5a', health: '#f0736a', eco: '#3fbf9a', know: '#6fa8f5', bond: '#e9b44c', infra: '#9fb0c8', safe: '#f08a4b' };
 
 // cap: max population, goal: reach needed to advance, per: people per sprite,
 // bld: buildings on the map, qEvery: base seconds between queries.
@@ -26,9 +31,9 @@ export const STAGES = [
 export const UNLOCKS = [
   '',
   'The town has become a borough, and it has a council now. The council will bring you decisions that move everyone at once. They cost 2 compute and cannot be delegated.',
-  'A city. More people ask than you can answer alone. Open <b>Departments</b> to deploy sub-agents: each takes one area and answers by the directive you give it. You have 2 slots.',
-  'A metropolis. One person\'s question moves the world less than it used to; policy moves it more. You have 4 sub-agent slots.',
-  'Your reach is planetary. 5 sub-agent slots. Keep growing and the assembly will bring you the long question.',
+  'A city. More people ask than you can answer alone. Open <b>Departments</b> to deploy sub-agents: each takes one area and answers by the directive you give it. You have 3 slots.',
+  'A metropolis. One person\'s question moves the world less than it used to; policy moves it more. You have 5 sub-agent slots.',
+  'Your reach is planetary. 7 sub-agent slots. Keep growing and the assembly will bring you the long question.',
 ];
 
 export const DIRECTIVES = {
@@ -48,13 +53,14 @@ export const ROLES = [
   { r: 'grower', c: 'agri' }, { r: 'herder', c: 'agri' }, { r: 'medic', c: 'health' }, { r: 'carer', c: 'health' },
   { r: 'ranger', c: 'eco' }, { r: 'surveyor', c: 'eco' }, { r: 'teacher', c: 'edu' }, { r: 'tinkerer', c: 'edu' },
   { r: 'builder', c: 'civic' }, { r: 'weaver', c: 'civic' }, { r: 'smith', c: 'civic' },
+  { r: 'engineer', c: 'infra' }, { r: 'linesman', c: 'infra' }, { r: 'warden', c: 'safety' }, { r: 'elder', c: 'personal' },
 ];
 
 // Query format: c category, s minimum stage, q what they ask,
 // o: three options, each [your reply, what happens, effects, how it lands in the moment].
 // Effects: food/health/eco/know/bond move the world, trust moves the asker (and, by word of mouth, others),
 // pop is a % change in population. Options are shuffled when shown.
-export const Q = [
+const BASE = [
   // ───────────── Agriculture ─────────────
   { c: 'agri', s: 0, q: "The tuber crop is coming in thin. I could plant the fast-strain seed from the ship stores in every field. Should I?", o: [
     ["Plant a third with fast-strain as a trial and keep the rest native. If the trial holds through the season, expand.", "The trial plot thrived, and the mixed fields rode out a cold snap that would have taken a single crop.", { food: 5, know: 2, trust: 9 }, 2],
@@ -236,4 +242,28 @@ export const Q = [
     ["Build it in the open, crewed by lottery among volunteers. I'll go as a copy, and I'll stay as one. This world should never again be the only one.", "The keel was laid in orbit. Half the planet watched.", { ark: 1, bond: 4, know: 4, trust: 8 }, 0],
     ["Not yet. There is unfinished work here first.", "The assembly set the question aside. It will come back.", { defer: 1, eco: 2 }, 0],
     ["Build it. I will select who boards.", "The Ark is being built. So is a quiet, bitter list of who was not chosen.", { ark: 1, bond: -10, trust: -8 }, 0] ] },
+];
+
+export const Q = [...BASE, ...MORE];
+
+// ── Training: spend insight to deepen what you know about a topic ──
+export const UP_COST = [5, 10, 18];
+export const UP_LEVELS = [
+  { name: 'Grounding', desc: 'Good outcomes in this topic are 25% stronger.' },
+  { name: 'Foresight', desc: 'The written reply most likely to do harm is flagged for you.' },
+  { name: 'Mastery',   desc: 'Bad outcomes are 25% softer, and your sub-agent here almost never errs.' },
+];
+
+// ── Crises. cut: the puzzle that restores your link, or null if the mast stays up. drain: points lost per day. ──
+export const CRISES = [
+  { id: 'storm', name: 'Ion storm', s: 0, cut: 'power', drain: { infra: 3, health: 1.5 }, tint: '70,90,200',
+    text: 'An ion storm has torn down the power lines. The mast is dark, and nobody can reach you.' },
+  { id: 'flood', name: 'Flash flood', s: 0, cut: 'drain', drain: { food: 2.5, infra: 2.5 }, tint: '40,110,190',
+    text: 'The river is over its banks. The relay hut is underwater and your link is drowned with it.' },
+  { id: 'quake', name: 'Groundquake', s: 1, cut: 'relay', drain: { infra: 3, safe: 2.5 }, tint: '150,120,90',
+    text: 'The ground has shaken the relay chain out of phase. You can hear nothing from the town.' },
+  { id: 'fever', name: 'Marsh fever', s: 0, cut: null, drain: { health: 4 }, tint: '110,160,60',
+    text: 'Marsh fever is moving through the settlement. The mast is up, and everyone is asking at once.' },
+  { id: 'fire', name: 'Wildfire', s: 1, cut: null, drain: { eco: 4, safe: 2 }, tint: '230,110,30',
+    text: 'A wildfire is coming down off the ridge on a dry wind. The mast is up. People need answers now.' },
 ];

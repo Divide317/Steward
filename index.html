@@ -40,6 +40,12 @@
       <div class="sub" id="arkSub"></div>
       <button id="launch" hidden>Launch</button>
     </div>
+    <div id="crisis" class="card" hidden>
+      <label>Crisis</label>
+      <div class="crname" id="crName"></div>
+      <div class="sub" id="crSub"></div>
+      <button id="relink" hidden>Repair the link</button>
+    </div>
     <div id="toasts"></div>
   </section>
 
@@ -48,16 +54,19 @@
     <nav id="tabs">
       <button data-t="inbox" class="on">Inbox <i id="nInbox"></i></button>
       <button data-t="log">Outcomes</button>
-      <button data-t="depts">Departments</button>
+      <button data-t="depts">Agents</button>
+      <button data-t="train">Training <i id="nInsight"></i></button>
     </nav>
     <div id="inbox" class="pane"></div>
     <div id="log" class="pane" hidden></div>
     <div id="depts" class="pane" hidden></div>
+    <div id="train" class="pane" hidden></div>
     <footer><button id="newgame">New game</button></footer>
   </aside>
 </main>
 
 <div id="modal" hidden></div>
+<div id="puzzle" hidden></div>
 <div id="overlay" hidden></div>
 
 <script type="module" src="src/ui.js"></script>

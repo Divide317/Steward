@@ -1,5 +1,5 @@
 // Canvas renderer: terrain, buildings, people, query bubbles.
-import { S, bpos, btype, adoption, person } from './game.js';
+import { S, bpos, btype, adoption, person, cut, crisisDef } from './game.js';
 import { Q, CATS, STAGES, PLANETS } from './content.js';
 
 const cam = { s: 1, R: 300 };
@@ -90,6 +90,11 @@ function building(ctx, type, z, hue) {
       ctx.fillStyle = '#f6dc9c'; ctx.beginPath(); ctx.arc(0, 0, z * 0.45, 0, 6.283); ctx.fill();
       break;
     }
+    case 'watch': {
+      ctx.fillStyle = '#8a5a3a'; rr(ctx, -z * 0.5, -z * 1.3, z, z * 2.1, 2); ctx.fill();
+      ctx.fillStyle = CATS.safety.color; rr(ctx, -z * 0.85, -z * 1.6, z * 1.7, z * 0.6, 2); ctx.fill();
+      break;
+    }
     case 'works': {
       ctx.fillStyle = '#6f7480'; rr(ctx, -z * 1.1, -z * 0.6, z * 2.2, z * 1.4, 2); ctx.fill();
       ctx.fillStyle = '#4c505a'; ctx.fillRect(z * 0.4, -z * 1.4, z * 0.4, z * 0.9);
@@ -113,8 +118,11 @@ export function render(ctx, w, h, dt, now) {
   ctx.fillStyle = `hsl(${hue},${10 + eco * 24}%,${9 + eco * 7}%)`;
   ctx.fillRect(0, 0, w, h);
 
+  const dark = cut(), crisis = crisisDef();
   ctx.save();
-  ctx.translate(w / 2, h / 2); ctx.scale(cam.s, cam.s);
+  ctx.translate(w / 2, h / 2);
+  if (crisis && crisis.id === 'quake') ctx.translate(Math.sin(now / 37) * 2.5, Math.cos(now / 53) * 2);   // the ground is still moving
+  ctx.scale(cam.s, cam.s);
   const vx = w / 2 / cam.s + 10, vy = h / 2 / cam.s + 10;
 
   for (const f of flora) {
@@ -126,9 +134,11 @@ export function render(ctx, w, h, dt, now) {
 
   // your reach, as light spreading from the mast
   const setR = 54 * Math.sqrt(shown) + 40;
-  const gr = ctx.createRadialGradient(0, 0, 0, 0, 0, setR * (0.3 + ad));
-  gr.addColorStop(0, 'rgba(95,212,196,.20)'); gr.addColorStop(1, 'rgba(95,212,196,0)');
-  ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(0, 0, setR * (0.3 + ad), 0, 6.283); ctx.fill();
+  if (!dark) {
+    const gr = ctx.createRadialGradient(0, 0, 0, 0, 0, setR * (0.3 + ad));
+    gr.addColorStop(0, 'rgba(95,212,196,.20)'); gr.addColorStop(1, 'rgba(95,212,196,0)');
+    ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(0, 0, setR * (0.3 + ad), 0, 6.283); ctx.fill();
+  }
 
   // paths
   const n = Math.ceil(shown);
@@ -150,10 +160,13 @@ export function render(ctx, w, h, dt, now) {
 
   // the mast (you)
   const pulse = (now / 1000) % 3 / 3;
-  ctx.strokeStyle = `rgba(95,212,196,${0.5 * (1 - pulse)})`; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.arc(0, 0, 10 + pulse * 46, 0, 6.283); ctx.stroke();
+  if (!dark) {
+    ctx.strokeStyle = `rgba(95,212,196,${0.5 * (1 - pulse)})`; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, 0, 10 + pulse * 46, 0, 6.283); ctx.stroke();
+  }
   ctx.fillStyle = '#10161d'; ctx.beginPath(); ctx.arc(0, 0, 13, 0, 6.283); ctx.fill();
-  ctx.fillStyle = '#5fd4c4'; ctx.beginPath(); ctx.arc(0, 0, 6, 0, 6.283); ctx.fill();
+  ctx.fillStyle = dark ? (Math.sin(now / 150) > 0.6 ? '#ff5a50' : '#3a3f48') : '#5fd4c4';
+  ctx.beginPath(); ctx.arc(0, 0, 6, 0, 6.283); ctx.fill();
 
   // people
   const pr = Math.max(3.2, Math.min(6, 4.4 * cam.s)) / cam.s;
@@ -174,13 +187,23 @@ export function render(ctx, w, h, dt, now) {
     if (!a) continue;
     const c = CATS[Q[q.k].c], u = 1 / cam.s;
     const bob = Math.sin(now / 320 + q.id) * 2 * u;
-    const x = a.x, y = a.y - 20 * u + bob, r = (q.pid < 0 ? 12 : 10) * u;
-    if (q.agentAt) {
-      ctx.strokeStyle = c.color; ctx.lineWidth = 2 * u; ctx.globalAlpha = 0.7;
+    const x = a.x, y = a.y - 20 * u + bob, r = (q.pid < 0 || q.crit ? 12 : 10) * u;
+    if (q.agentAt || dark) {
+      ctx.strokeStyle = dark ? '#6b7480' : c.color; ctx.lineWidth = 2 * u; ctx.globalAlpha = 0.7;
       ctx.beginPath(); ctx.arc(x, y, r * 0.55, 0, 6.283); ctx.stroke(); ctx.globalAlpha = 1;
       continue;
     }
-    ctx.fillStyle = c.color;
+    if (q.proc) {   // your typed reply is on its way
+      ctx.fillStyle = '#10161d'; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill();
+      ctx.strokeStyle = '#5fd4c4'; ctx.lineWidth = 2.5 * u;
+      ctx.beginPath(); ctx.arc(x, y, r, now / 200, now / 200 + 4.2); ctx.stroke();
+      continue;
+    }
+    if (q.crit) {
+      ctx.fillStyle = `rgba(255,70,60,${0.25 + 0.2 * Math.sin(now / 140)})`;
+      ctx.beginPath(); ctx.arc(x, y, r + 7 * u, 0, 6.283); ctx.fill();
+    }
+    ctx.fillStyle = q.crit ? '#ff5a50' : c.color;
     ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill();
     ctx.beginPath(); ctx.moveTo(x - 4 * u, y + r * 0.8); ctx.lineTo(x, y + r + 5 * u); ctx.lineTo(x + 4 * u, y + r * 0.8); ctx.fill();
     if (q.ttl < 18) {
@@ -188,7 +211,7 @@ export function render(ctx, w, h, dt, now) {
       ctx.beginPath(); ctx.arc(x, y, r + 3 * u, 0, 6.283); ctx.stroke();
     }
     ctx.fillStyle = '#10161d'; ctx.font = `700 ${13 * u}px system-ui`;
-    ctx.fillText(q.pid < 0 ? '!' : '?', x, y + 0.5 * u);
+    ctx.fillText(q.pid < 0 || q.crit ? '!' : '?', x, y + 0.5 * u);
   }
 
   // floating outcome text
@@ -203,6 +226,12 @@ export function render(ctx, w, h, dt, now) {
     ctx.globalAlpha = 1;
   }
   ctx.restore();
+
+  // a crisis colours the whole sky
+  if (crisis) {
+    const flick = crisis.id === 'fire' ? 0.05 * Math.sin(now / 90) : crisis.id === 'storm' && Math.sin(now / 610) > 0.985 ? 0.35 : 0;
+    ctx.fillStyle = `rgba(${crisis.tint},${0.16 + flick})`; ctx.fillRect(0, 0, w, h);
+  }
 
   // dusk and night
   const night = Math.max(0, -Math.sin(S.dayT / 24 * 6.283));
