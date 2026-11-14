@@ -4,15 +4,18 @@ import { Q, CATS, STATS, TOPICS, STAGES, PLANETS, STAT_LABEL, STAT_COLOR, DIRECT
 import { render, pickQuery, addFloat, resetView } from './render.js';
 import { openPuzzle } from './puzzle.js';
 import { localJudge } from './judge.js';
+import * as Judge from './settings.js';
 
 const $ = s => document.querySelector(s);
 const cv = $('#c'), ctx = cv.getContext('2d');
 const fmt = n => Math.round(n).toLocaleString('en-US');
 let modalQ = null, overlayOpen = false, W = 0, H = 0;
 
-// Typed replies are ruled on by Claude when the server has an API key, and by a simple offline matcher when it doesn't.
-let aiOn = false, warned = false;
-try { aiOn = !!(await (await fetch('/api/status')).json()).ai; } catch {}
+// Each player picks how their typed replies are judged: text matching, free Gemini, or their own Claude key.
+let warned = '';
+await Judge.loadStatus();
+function openJudge() { closeModal(); Judge.open($('#settings'), () => { warned = ''; toast({ who: 'Judging updated', text: `Typed replies are now judged by ${Judge.label()}.`, fx: {}, good: true }); setJudgeBtn(); }); }
+function setJudgeBtn() { set($('#judgeBtn'), `Judging: ${Judge.label()}`); }
 
 // ── text helpers ──
 const set = (el, v) => { if (el.textContent !== String(v)) el.textContent = v; };
@@ -27,7 +30,8 @@ function chips(fx) {
 const who = q => { const p = G.person(q.pid); return p ? { name: p.name, first: p.name.split(' ')[0], role: p.role, trust: p.trust } : { name: 'The Council', first: 'the council', role: 'decision for everyone', trust: null }; };
 
 // ── top bar ──
-$('#stats').innerHTML = STATS.map(k => `<div class="stat" id="s-${k}"><label title="${STAT_LABEL[k]}"><span class="full">${STAT_LABEL[k]}</span><span class="short">${STAT_LABEL[k].slice(0, 5)}</span></label><div class="bar"><i style="background:${STAT_COLOR[k]}"></i></div><span></span></div>`).join('');
+const SHORT = { food: 'Food', health: 'Health', eco: 'Eco', know: 'Know', bond: 'Bond', infra: 'Infra', safe: 'Safety' };
+$('#stats').innerHTML = STATS.map(k => `<div class="stat" id="s-${k}"><label title="${STAT_LABEL[k]}"><span class="full">${STAT_LABEL[k]}</span><span class="short">${SHORT[k]}</span></label><div class="bar"><i style="background:${STAT_COLOR[k]}"></i></div><span class="val"></span></div>`).join('');
 $('#speed').addEventListener('click', e => { const b = e.target.closest('button'); if (b) G.S.speed = +b.dataset.s; });
 
 function hud() {
@@ -37,7 +41,7 @@ function hud() {
   for (const k of STATS) {
     const el = $('#s-' + k), v = S.stats[k];
     el.querySelector('i').style.width = v + '%';
-    set(el.querySelector('span'), Math.round(v));
+    set(el.querySelector('.val'), Math.round(v));
     el.classList.toggle('low', v < 25);
   }
   for (const b of $('#speed').children) b.classList.toggle('on', +b.dataset.s === S.speed);
@@ -187,7 +191,7 @@ function drawModal(error = '', draft = '') {
     <label>Type your own reply <span class="lcost">${costText(ct)} compute · takes ${G.PROC}s to process</span></label>
     <textarea id="reply" maxlength="600" rows="3" placeholder="${busy ? 'Another typed reply is still being processed.' : `Say it to ${p.first} in your own words…`}" ${canT && !busy ? '' : 'disabled'}></textarea>
     <div class="sendrow"><span class="err">${error}</span>
-      ${aiOn ? '' : '<span class="hintline">No API key: your words are matched to the closest written reply.</span>'}
+      <span class="hintline">Judged by ${Judge.label()} · <button class="link" data-judge>change</button></span>
       <button class="primary small" data-send ${canT && !busy ? '' : 'disabled'}>Send <kbd>Enter</kbd></button></div>
     <label>Or pick a written reply <span class="lcost">${costText(cw)} compute · immediate</span></label>
     <div class="opts">${q.order.map((oi, i) => `<button data-o="${oi}" ${canW ? '' : 'disabled'} class="${oi === flag ? 'risky' : ''}"><kbd>${i + 1}</kbd><span>${t.o[oi][0]}${oi === flag ? '<em class="flag">Your training flags this as the likeliest to do harm.</em>' : ''}</span></button>`).join('')}</div>
@@ -210,6 +214,7 @@ function sendReply() {
 $('#modal').addEventListener('click', e => {
   if (e.target.id === 'modal' || e.target.closest('[data-close]')) return closeModal();
   if (e.target.closest('[data-send]')) return sendReply();
+  if (e.target.closest('[data-judge]')) return openJudge();
   const b = e.target.closest('[data-o]');
   if (b && modalQ && G.answer(modalQ.id, +b.dataset.o)) closeModal();
 });
@@ -225,11 +230,13 @@ function pumpJudges() {
 }
 async function judge(q) {
   const S = G.S, t = Q[q.k], p = who(q);
-  if (aiOn) {
+  const how = Judge.request();
+  if (how) {
     try {
       const r = await fetch('/api/judge', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...how,
           question: t.q, reply: q.proc.reply, council: q.pid < 0, critical: q.crit, name: p.name, role: p.role, trust: p.trust,
           stage: STAGES[S.stage].name, pop: Math.round(S.pop), stats: S.stats,
           refs: t.o.map(o => ({ reply: o[0], outcome: o[1], fx: o[2], like: o[3] })),
@@ -237,9 +244,11 @@ async function judge(q) {
       });
       const res = await r.json();
       if (r.ok) return { outcome: res.outcome, fx: res.fx, like: res.like };
-      if (!warned) { warned = true; toast({ who: 'Judge unavailable', text: `${res.error || 'The judge failed.'} Typed replies are being matched offline for now.`, fx: {}, good: false }); }
+      const msg = res.error || 'The judge failed.';
+      if (warned !== msg) { warned = msg; toast({ who: 'Judge unavailable', text: `${msg} This reply was matched to the closest written reply instead.`, fx: {}, good: false }); }
     } catch {
-      if (!warned) { warned = true; toast({ who: 'Judge unavailable', text: 'Could not reach the game server. Typed replies are being matched offline for now.', fx: {}, good: false }); }
+      const msg = 'Could not reach the game server.';
+      if (warned !== msg) { warned = msg; toast({ who: 'Judge unavailable', text: `${msg} This reply was matched to the closest written reply instead.`, fx: {}, good: false }); }
     }
   }
   return localJudge(t, q.proc.reply);
@@ -317,6 +326,8 @@ G.hooks.over = o => {
 };
 
 function fresh() { G.newGame(); resetView(); inboxSig = ''; $('#toasts').innerHTML = ''; redraw(); intro(); }
+$('#judgeBtn').onclick = openJudge;
+setJudgeBtn();
 $('#newgame').onclick = () => overlay('<h1>Start over?</h1><p>The current world will be lost.</p>', 'Yes, start over', fresh);
 $('#launch').onclick = () => {
   if (G.launchArk()) { resetView(); inboxSig = ''; $('#toasts').innerHTML = ''; redraw(); intro(); }
@@ -327,6 +338,7 @@ cv.addEventListener('click', e => { const q = pickQuery(e.offsetX, e.offsetY, W,
 cv.addEventListener('mousemove', e => { cv.style.cursor = pickQuery(e.offsetX, e.offsetY, W, H) ? 'pointer' : 'default'; });
 addEventListener('keydown', e => {
   if (overlayOpen) { if (e.key === 'Enter') $('#overlay .primary').click(); return; }
+  if (Judge.isOpen()) { if (e.key === 'Escape') Judge.close(); return; }
   if (!$('#puzzle').hidden) { if (e.key === 'Escape') $('#puzzle').hidden = true; return; }
   if (modalQ) {
     if (e.key === 'Escape') return closeModal();
@@ -357,7 +369,7 @@ let last = performance.now();
 function frame(now) {
   const real = Math.max(0, Math.min(0.1, (now - last) / 1000)); last = now;   // the first frame's timestamp can precede `last`
   // Reading a question or an announcement pauses the world. Repairing the link does not.
-  const paused = modalQ || overlayOpen || G.S.over || !G.S.speed;
+  const paused = modalQ || overlayOpen || Judge.isOpen() || G.S.over || !G.S.speed;
   if (!paused) G.tick(real * G.S.speed);
   resize();
   ctx.setTransform(devicePixelRatio || 1, 0, 0, devicePixelRatio || 1, 0, 0);
@@ -366,8 +378,13 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 
+// Each player's world lives in their own browser. It is saved after every outcome and every day,
+// every few seconds while playing, and whenever the tab is hidden or closed.
 const resumed = G.load();
-if (!resumed) G.newGame();
-if (!resumed) intro();
+if (!resumed) { G.newGame(); intro(); }
+else toast({ who: 'Welcome back', text: `Your world is as you left it: day ${G.S.day}, a ${STAGES[G.S.stage].name} of ${fmt(G.S.pop)}.`, fx: {}, good: true });
+setInterval(() => { if (!G.S.over) G.save(); }, 5000);
+addEventListener('pagehide', () => G.save());
+document.addEventListener('visibilitychange', () => { if (document.hidden) G.save(); });
 window.__steward = G;   // handy for poking at the game from the console
 requestAnimationFrame(frame);
