@@ -56,7 +56,7 @@ export function newGame(planet = 0, legacy = 0, carry = { days: 0 }) {
     know: Object.fromEntries(TOPICS.map(c => [c, 0])), insight: legacy * 2,
     crisis: null, crisisT: rnd(110, 150), lastCrisis: '',
     ark: { offered: false, active: false, progress: 0, defer: 0 },
-    over: null, answered: 0,
+    over: null, answered: 0, marks: [], scars: [],
   };
   for (let i = 0; i < 24; i++) addPerson(rnd(18, 40) + legacy * 6);
   save();
@@ -182,6 +182,9 @@ export function restoreLink() {
 function endCrisis() {
   const def = crisisDef();
   S.crisis = null;
+  const at = bpos(1 + ((Math.random() * STAGES[S.stage].bld) | 0));   // the crisis leaves a scar on the board
+  (S.scars ||= []).push({ x: Math.round(at.x + rnd(-20, 20)), y: Math.round(at.y + rnd(-20, 20)), tint: def.tint });
+  if (S.scars.length > 8) S.scars.shift();
   S.crisisT = rnd(130, 200);
   S.insight += 2;
   note(`The ${def.name.toLowerCase()} has passed. +2 insight.`);
@@ -347,6 +350,10 @@ function resolve(pd) {
   if (fx.defer) { S.ark.offered = false; S.ark.defer = S.day + 4; }
   if (p) { p.busy = false; p.wait = rnd(1, 3); }
   const good = sum + (fx.trust || 0) * 0.5 > 0;
+  if (p) {   // the board keeps a mark of every answer, where it was acted on
+    (S.marks ||= []).push({ x: Math.round(p.x + rnd(-6, 6)), y: Math.round(p.y + rnd(-4, 4)), good });
+    if (S.marks.length > 120) S.marks.shift();
+  }
   let insight = 0;
   if (good && pd.by !== 'agent') { insight = pd.crit ? 2 : 1; S.insight += insight; }   // you learn from what goes well
   const e = { day: S.day, who: pd.who, cat: t.c, q: t.q, text, fx: shown, by: pd.by, crit: pd.crit, insight, reply: pd.custom ? pd.custom.reply : '', good };

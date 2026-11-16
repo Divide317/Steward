@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "hard-offset-shadow",
+        "value": "*",
+        "files": [
+          "public/style.css"
+        ],
+        "createdAt": "2026-11-16T12:37:43.070Z",
+        "reason": "Direction contract (Pixel Tabletop, on the Krillion blueprint the user named): pixel frames sit on a hard plinth by design"
+      },
+      {
+        "rule": "hard-offset-shadow",
+        "value": "*",
+        "files": [
+          "public/index.html"
+        ],
+        "createdAt": "2026-11-16T12:38:05.379Z",
+        "reason": "Direction contract (Pixel Tabletop, on the Krillion blueprint the user named): pixel frames sit on a hard plinth by design"
+      }
+    ]
+  }
+}

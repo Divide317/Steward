@@ -23,7 +23,7 @@ Then open http://localhost:5173.
 
 ## How to play
 
-- **Answer questions.** People with a `?` above them have a question. Click them, or the question in the inbox.
+- **Answer questions.** Every question is a card in your hand at the bottom of the screen. Play a card, or click the sign above someone on the board.
 - **Two ways to reply.** A written reply costs 1 compute and lands at once. Typing your own costs half, takes 10 seconds to process, and only one can be in the works at a time.
 - **Watch the seven measures.** Food, Health, Ecology, Knowledge, Cohesion, Infrastructure and Safety all wear down every day. If they collapse, so does the town.
 - **Grow your reach.** Reach is population times the share of people who rely on you. It carries the settlement from Town to Borough, City, Metropolis and World-State.
@@ -53,7 +53,7 @@ The save belongs to that browser on that device. It does not follow a player to 
 
 ## Typed replies and the judge
 
-Written replies always work the same way. For replies a player types, each player chooses what decides the outcome, under **Judging** at the bottom of the sidebar or **change** in any reply dialog:
+Written replies always work the same way. For replies a player types, each player chooses what decides the outcome, under **Judging** in the top bar or **change** in any reply dialog:
 
 | Option | Cost | How it judges |
 |---|---|---|
@@ -94,7 +94,9 @@ With no environment variables at all, the site still works: players get text mat
 | `public/src/content.js` | Topics, stages, crises, training levels and the first set of questions |
 | `public/src/content-more.js` | The wider question pool, critical questions and crisis questions |
 | `public/src/game.js` | The simulation: people, questions, outcomes, crises, training, progression, saving |
-| `public/src/render.js` | The map |
+| `public/src/render.js` | The pixel board and the sky |
+| `public/src/icons.js` | The pixel icon set |
+| `public/fonts/` | VT323 and Silkscreen, self-hosted under the SIL Open Font License |
 | `public/src/ui.js` | The interface and main loop |
 | `public/src/puzzle.js` | The reconnection puzzles |
 | `public/src/judge.js` | Text matching for typed replies (no AI) |

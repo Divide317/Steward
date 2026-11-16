@@ -1,0 +1,671 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-16T17:30:37.414Z",
+  "title": "Design System: Steward",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#050a14",
+        "tonalRamp": [
+          "oklch(15% 0.011 260)",
+          "oklch(27% 0.017 260)",
+          "oklch(39% 0.022 260)",
+          "oklch(51% 0.024 260)",
+          "oklch(63% 0.024 260)",
+          "oklch(75% 0.019 260)",
+          "oklch(86% 0.012 260)",
+          "oklch(95% 0.006 260)"
+        ]
+      },
+      "table": {
+        "role": "neutral",
+        "displayName": "Table",
+        "canonical": "#0d1830",
+        "tonalRamp": [
+          "oklch(15% 0.023 264)",
+          "oklch(27% 0.035 264)",
+          "oklch(39% 0.045 264)",
+          "oklch(51% 0.050 264)",
+          "oklch(63% 0.050 264)",
+          "oklch(75% 0.040 264)",
+          "oklch(86% 0.025 264)",
+          "oklch(95% 0.013 264)"
+        ]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Panel",
+        "canonical": "#101d33",
+        "tonalRamp": [
+          "oklch(15% 0.021 260)",
+          "oklch(27% 0.033 260)",
+          "oklch(39% 0.042 260)",
+          "oklch(51% 0.047 260)",
+          "oklch(63% 0.047 260)",
+          "oklch(75% 0.037 260)",
+          "oklch(86% 0.023 260)",
+          "oklch(95% 0.012 260)"
+        ]
+      },
+      "raised": {
+        "role": "neutral",
+        "displayName": "Raised",
+        "canonical": "#142640",
+        "tonalRamp": [
+          "oklch(15% 0.024 258)",
+          "oklch(27% 0.038 258)",
+          "oklch(39% 0.049 258)",
+          "oklch(51% 0.054 258)",
+          "oklch(63% 0.054 258)",
+          "oklch(75% 0.044 258)",
+          "oklch(86% 0.027 258)",
+          "oklch(95% 0.014 258)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "canonical": "#1f3657",
+        "tonalRamp": [
+          "oklch(15% 0.030 257)",
+          "oklch(27% 0.046 257)",
+          "oklch(39% 0.059 257)",
+          "oklch(51% 0.066 257)",
+          "oklch(63% 0.066 257)",
+          "oklch(75% 0.052 257)",
+          "oklch(86% 0.033 257)",
+          "oklch(95% 0.016 257)"
+        ]
+      },
+      "plinth": {
+        "role": "neutral",
+        "displayName": "Plinth",
+        "canonical": "#081122",
+        "tonalRamp": [
+          "oklch(15% 0.017 262)",
+          "oklch(27% 0.026 262)",
+          "oklch(39% 0.034 262)",
+          "oklch(51% 0.038 262)",
+          "oklch(63% 0.038 262)",
+          "oklch(75% 0.030 262)",
+          "oklch(86% 0.019 262)",
+          "oklch(95% 0.009 262)"
+        ]
+      },
+      "ice": {
+        "role": "neutral",
+        "displayName": "Ice",
+        "canonical": "#e8f1ff",
+        "tonalRamp": [
+          "oklch(15% 0.010 259)",
+          "oklch(27% 0.015 259)",
+          "oklch(39% 0.019 259)",
+          "oklch(51% 0.021 259)",
+          "oklch(63% 0.021 259)",
+          "oklch(75% 0.017 259)",
+          "oklch(86% 0.011 259)",
+          "oklch(95% 0.005 259)"
+        ]
+      },
+      "dim": {
+        "role": "neutral",
+        "displayName": "Dim",
+        "canonical": "#a8bad2",
+        "tonalRamp": [
+          "oklch(15% 0.018 256)",
+          "oklch(27% 0.028 256)",
+          "oklch(39% 0.036 256)",
+          "oklch(51% 0.040 256)",
+          "oklch(63% 0.040 256)",
+          "oklch(75% 0.032 256)",
+          "oklch(86% 0.020 256)",
+          "oklch(95% 0.010 256)"
+        ]
+      },
+      "mute": {
+        "role": "neutral",
+        "displayName": "Mute",
+        "canonical": "#8197bb",
+        "tonalRamp": [
+          "oklch(15% 0.027 260)",
+          "oklch(27% 0.041 260)",
+          "oklch(39% 0.053 260)",
+          "oklch(51% 0.059 260)",
+          "oklch(63% 0.059 260)",
+          "oklch(75% 0.047 260)",
+          "oklch(86% 0.030 260)",
+          "oklch(95% 0.015 260)"
+        ]
+      },
+      "cyan": {
+        "role": "primary",
+        "displayName": "Signal Cyan",
+        "canonical": "#4de3ff",
+        "tonalRamp": [
+          "oklch(15% 0.058 213)",
+          "oklch(27% 0.090 213)",
+          "oklch(39% 0.116 213)",
+          "oklch(51% 0.129 213)",
+          "oklch(63% 0.129 213)",
+          "oklch(75% 0.103 213)",
+          "oklch(86% 0.064 213)",
+          "oklch(95% 0.032 213)"
+        ]
+      },
+      "cyan-hover": {
+        "role": "primary",
+        "displayName": "Lit Cyan",
+        "canonical": "#8beeff",
+        "tonalRamp": [
+          "oklch(15% 0.043 210)",
+          "oklch(27% 0.067 210)",
+          "oklch(39% 0.086 210)",
+          "oklch(51% 0.096 210)",
+          "oklch(63% 0.096 210)",
+          "oklch(75% 0.077 210)",
+          "oklch(86% 0.048 210)",
+          "oklch(95% 0.024 210)"
+        ]
+      },
+      "gold": {
+        "role": "secondary",
+        "displayName": "Reach Gold",
+        "canonical": "#ffd166",
+        "tonalRamp": [
+          "oklch(15% 0.061 86)",
+          "oklch(27% 0.094 86)",
+          "oklch(39% 0.121 86)",
+          "oklch(51% 0.135 86)",
+          "oklch(63% 0.135 86)",
+          "oklch(75% 0.108 86)",
+          "oklch(86% 0.067 86)",
+          "oklch(95% 0.034 86)"
+        ]
+      },
+      "coral": {
+        "role": "tertiary",
+        "displayName": "Critical Coral",
+        "canonical": "#ff5d8f",
+        "tonalRamp": [
+          "oklch(15% 0.090 5)",
+          "oklch(27% 0.140 5)",
+          "oklch(39% 0.180 5)",
+          "oklch(51% 0.200 5)",
+          "oklch(63% 0.200 5)",
+          "oklch(75% 0.160 5)",
+          "oklch(86% 0.100 5)",
+          "oklch(95% 0.050 5)"
+        ]
+      },
+      "good": {
+        "role": "tertiary",
+        "displayName": "Gain Green",
+        "canonical": "#8fe0a8",
+        "tonalRamp": [
+          "oklch(15% 0.050 153)",
+          "oklch(27% 0.078 153)",
+          "oklch(39% 0.101 153)",
+          "oklch(51% 0.112 153)",
+          "oklch(63% 0.112 153)",
+          "oklch(75% 0.090 153)",
+          "oklch(86% 0.056 153)",
+          "oklch(95% 0.028 153)"
+        ]
+      },
+      "critical-face": {
+        "role": "tertiary",
+        "displayName": "Critical Face",
+        "canonical": "#24152a",
+        "tonalRamp": [
+          "oklch(15% 0.020 316)",
+          "oklch(27% 0.031 316)",
+          "oklch(39% 0.040 316)",
+          "oklch(51% 0.045 316)",
+          "oklch(63% 0.045 316)",
+          "oklch(75% 0.036 316)",
+          "oklch(86% 0.022 316)",
+          "oklch(95% 0.011 316)"
+        ]
+      },
+      "coral-quiet": {
+        "role": "tertiary",
+        "displayName": "Quiet Coral",
+        "canonical": "#5a2c41",
+        "tonalRamp": [
+          "oklch(15% 0.033 353)",
+          "oklch(27% 0.051 353)",
+          "oklch(39% 0.065 353)",
+          "oklch(51% 0.073 353)",
+          "oklch(63% 0.073 353)",
+          "oklch(75% 0.058 353)",
+          "oklch(86% 0.036 353)",
+          "oklch(95% 0.018 353)"
+        ]
+      },
+      "good-quiet": {
+        "role": "tertiary",
+        "displayName": "Quiet Green",
+        "canonical": "#2c5a45",
+        "tonalRamp": [
+          "oklch(15% 0.028 162)",
+          "oklch(27% 0.044 162)",
+          "oklch(39% 0.056 162)",
+          "oklch(51% 0.062 162)",
+          "oklch(63% 0.062 162)",
+          "oklch(75% 0.050 162)",
+          "oklch(86% 0.031 162)",
+          "oklch(95% 0.016 162)"
+        ]
+      },
+      "wire-off": {
+        "role": "neutral",
+        "displayName": "Unlit Wire",
+        "canonical": "#2a3b55",
+        "tonalRamp": [
+          "oklch(15% 0.023 259)",
+          "oklch(27% 0.036 259)",
+          "oklch(39% 0.046 259)",
+          "oklch(51% 0.051 259)",
+          "oklch(63% 0.051 259)",
+          "oklch(75% 0.041 259)",
+          "oklch(86% 0.025 259)",
+          "oklch(95% 0.013 259)"
+        ]
+      },
+      "suit-food": {
+        "role": "tertiary",
+        "displayName": "Suit: Food",
+        "canonical": "#9bcf5a",
+        "tonalRamp": [
+          "oklch(15% 0.071 129)",
+          "oklch(27% 0.110 129)",
+          "oklch(39% 0.142 129)",
+          "oklch(51% 0.157 129)",
+          "oklch(63% 0.157 129)",
+          "oklch(75% 0.126 129)",
+          "oklch(86% 0.079 129)",
+          "oklch(95% 0.039 129)"
+        ]
+      },
+      "suit-health": {
+        "role": "tertiary",
+        "displayName": "Suit: Health",
+        "canonical": "#f0736a",
+        "tonalRamp": [
+          "oklch(15% 0.070 26)",
+          "oklch(27% 0.109 26)",
+          "oklch(39% 0.140 26)",
+          "oklch(51% 0.156 26)",
+          "oklch(63% 0.156 26)",
+          "oklch(75% 0.125 26)",
+          "oklch(86% 0.078 26)",
+          "oklch(95% 0.039 26)"
+        ]
+      },
+      "suit-ecology": {
+        "role": "tertiary",
+        "displayName": "Suit: Ecology",
+        "canonical": "#3fbf9a",
+        "tonalRamp": [
+          "oklch(15% 0.056 170)",
+          "oklch(27% 0.087 170)",
+          "oklch(39% 0.112 170)",
+          "oklch(51% 0.124 170)",
+          "oklch(63% 0.124 170)",
+          "oklch(75% 0.099 170)",
+          "oklch(86% 0.062 170)",
+          "oklch(95% 0.031 170)"
+        ]
+      },
+      "suit-knowledge": {
+        "role": "tertiary",
+        "displayName": "Suit: Knowledge",
+        "canonical": "#6fa8f5",
+        "tonalRamp": [
+          "oklch(15% 0.058 256)",
+          "oklch(27% 0.089 256)",
+          "oklch(39% 0.115 256)",
+          "oklch(51% 0.128 256)",
+          "oklch(63% 0.128 256)",
+          "oklch(75% 0.102 256)",
+          "oklch(86% 0.064 256)",
+          "oklch(95% 0.032 256)"
+        ]
+      },
+      "suit-cohesion": {
+        "role": "tertiary",
+        "displayName": "Suit: Cohesion",
+        "canonical": "#e9b44c",
+        "tonalRamp": [
+          "oklch(15% 0.060 81)",
+          "oklch(27% 0.094 81)",
+          "oklch(39% 0.121 81)",
+          "oklch(51% 0.134 81)",
+          "oklch(63% 0.134 81)",
+          "oklch(75% 0.107 81)",
+          "oklch(86% 0.067 81)",
+          "oklch(95% 0.033 81)"
+        ]
+      },
+      "suit-infrastructure": {
+        "role": "tertiary",
+        "displayName": "Suit: Infrastructure",
+        "canonical": "#9fb0c8",
+        "tonalRamp": [
+          "oklch(15% 0.018 257)",
+          "oklch(27% 0.028 257)",
+          "oklch(39% 0.036 257)",
+          "oklch(51% 0.039 257)",
+          "oklch(63% 0.039 257)",
+          "oklch(75% 0.032 257)",
+          "oklch(86% 0.020 257)",
+          "oklch(95% 0.010 257)"
+        ]
+      },
+      "suit-safety": {
+        "role": "tertiary",
+        "displayName": "Suit: Safety",
+        "canonical": "#f08a4b",
+        "tonalRamp": [
+          "oklch(15% 0.066 50)",
+          "oklch(27% 0.103 50)",
+          "oklch(39% 0.132 50)",
+          "oklch(51% 0.146 50)",
+          "oklch(63% 0.146 50)",
+          "oklch(75% 0.117 50)",
+          "oklch(86% 0.073 50)",
+          "oklch(95% 0.037 50)"
+        ]
+      },
+      "suit-personal": {
+        "role": "tertiary",
+        "displayName": "Suit: Personal",
+        "canonical": "#c79bf2",
+        "tonalRamp": [
+          "oklch(15% 0.058 307)",
+          "oklch(27% 0.091 307)",
+          "oklch(39% 0.116 307)",
+          "oklch(51% 0.129 307)",
+          "oklch(63% 0.129 307)",
+          "oklch(75% 0.104 307)",
+          "oklch(86% 0.065 307)",
+          "oklch(95% 0.032 307)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "score": {
+        "displayName": "Score",
+        "purpose": "The reach numeral beside the board; steps down to 48, 32 and 24px."
+      },
+      "display": {
+        "displayName": "Display",
+        "purpose": "Sheet titles and the STEWARD lettering."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Drawer titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Buttons, the day plate, event, slip and option-group titles."
+      },
+      "body-lead": {
+        "displayName": "Body Lead",
+        "purpose": "The question being asked, in the dialog."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Everything read: questions, outcomes, notes."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase tracked labels: measures, tools, fields, key caps."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ring-quiet",
+        "value": "0 0 0 2px #050a14, 0 0 0 4px #1f3657",
+        "purpose": "Plates and pieces lying flat; the ring colour changes on hover, selection or outcome."
+      },
+      {
+        "name": "ring",
+        "value": "0 0 0 2px #050a14, 0 0 0 5px #4de3ff, 0 5px 0 5px #081122",
+        "purpose": "Pieces standing on the table: board, drawer, buttons, event cards."
+      },
+      {
+        "name": "card",
+        "value": "0 0 0 2px #050a14, 0 0 0 5px var(--suit), 0 6px 0 5px #081122",
+        "purpose": "Question cards; the ring takes the suit colour."
+      },
+      {
+        "name": "lifted",
+        "value": "0 0 0 2px #050a14, 0 0 0 6px var(--suit), 0 8px 0 6px #081122",
+        "purpose": "Dialogs and sheets, the highest pieces."
+      },
+      {
+        "name": "well",
+        "value": "0 0 0 2px #1f3657",
+        "purpose": "Inputs, selects, unlit tokens and puzzle tiles on an ink face; cyan on focus."
+      },
+      {
+        "name": "solid-key",
+        "value": "0 0 0 2px #050a14, 0 5px 0 2px #081122",
+        "purpose": "The primary button."
+      },
+      {
+        "name": "lettering-split",
+        "value": "-3px 0 0 #4de3ff, 3px 0 0 #ff5d8f, 0 4px 0 #0d1830",
+        "purpose": "text-shadow on the STEWARD lettering only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "step",
+        "value": "steps(4, end)",
+        "purpose": "Timing for every transition and arrival; pixel things move in steps."
+      },
+      {
+        "name": "move",
+        "value": "0.2s",
+        "purpose": "Cards rising, straightening and settling."
+      },
+      {
+        "name": "arrive",
+        "value": "0.3s",
+        "purpose": "Cards and slips dealt in, dialogs lifting, the drawer sliding (16px to 24px travel with a stepped fade)."
+      },
+      {
+        "name": "blink",
+        "value": "1s steps(2, jump-none) infinite",
+        "purpose": "Failing measures and processing state; 0.5s for a late timer, 1.2s for the alarm ring."
+      },
+      {
+        "name": "reduced",
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "Collapses all animation and transition durations."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone",
+        "value": "max-width: 760px"
+      },
+      {
+        "name": "narrow",
+        "value": "max-width: 1180px"
+      },
+      {
+        "name": "wide",
+        "value": "min-width: 1500px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Button",
+      "kind": "button",
+      "refersTo": "button",
+      "description": "The standing button: panel face, cyan ring, hard plinth. Sinks 2px when pressed.",
+      "html": "<button class=\"ds-btn\"><svg class=\"ds-px\" viewBox=\"0 0 8 8\" shape-rendering=\"crispEdges\" aria-hidden=\"true\" fill=\"currentColor\"><rect x=\"0\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"6\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"1\" y=\"1\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"1\" width=\"1\" height=\"1\"/><rect x=\"2\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"3\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"2\" y=\"5\" width=\"3\" height=\"1\"/><rect x=\"1\" y=\"6\" width=\"5\" height=\"1\"/><rect x=\"0\" y=\"7\" width=\"8\" height=\"1\"/></svg>Repair the link</button>",
+      "css": ".ds-px { width: 16px; height: 16px; display: block; flex-shrink: 0; } .ds-btn { display: inline-flex; align-items: center; gap: 10px; padding: 11px 18px; border: 0; cursor: pointer; background: var(--panel); color: var(--ice); font: 400 16px/1 var(--display); letter-spacing: 1px; text-transform: uppercase; box-shadow: var(--ring); } .ds-btn:hover { background: var(--raised); } .ds-btn:active { transform: translateY(2px); box-shadow: 0 0 0 2px var(--ink), 0 0 0 5px var(--cyan), 0 3px 0 5px var(--plinth); } .ds-btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one committing action on a piece: a solid cyan key with a key cap inside.",
+      "html": "<button class=\"ds-btn-primary\">Send <kbd class=\"ds-kbd\">Enter</kbd></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 10px; padding: 11px 18px; border: 0; cursor: pointer; background: var(--cyan); color: var(--ink); font: 400 16px/1 var(--display); letter-spacing: 1px; text-transform: uppercase; box-shadow: 0 0 0 2px var(--ink), 0 5px 0 2px var(--plinth); } .ds-btn-primary:hover { background: #8beeff; } .ds-btn-primary:active { transform: translateY(2px); box-shadow: 0 0 0 2px var(--ink), 0 3px 0 2px var(--plinth); } .ds-btn-primary:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; } .ds-kbd { font: var(--label); text-transform: uppercase; background: var(--ink); color: var(--cyan); padding: 1px 6px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "The way back: transparent face, quiet ring, dim text.",
+      "html": "<button class=\"ds-btn-ghost\">Back to the hand</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; gap: 10px; padding: 11px 18px; border: 0; cursor: pointer; background: transparent; color: var(--dim); font: 400 16px/1 var(--display); letter-spacing: 1px; text-transform: uppercase; box-shadow: var(--ring-quiet); } .ds-btn-ghost:hover { color: var(--ice); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }"
+    },
+    {
+      "name": "Tool Button",
+      "kind": "nav",
+      "refersTo": "tool-button",
+      "description": "A tool plate in the sky: quiet ring at rest, cyan ring when hovered or open.",
+      "html": "<nav class=\"ds-deck\"><button><svg class=\"ds-px\" viewBox=\"0 0 8 8\" shape-rendering=\"crispEdges\" aria-hidden=\"true\" fill=\"currentColor\"><rect x=\"1\" y=\"0\" width=\"6\" height=\"1\"/><rect x=\"0\" y=\"1\" width=\"1\" height=\"1\"/><rect x=\"7\" y=\"1\" width=\"1\" height=\"1\"/><rect x=\"1\" y=\"2\" width=\"6\" height=\"1\"/><rect x=\"1\" y=\"3\" width=\"1\" height=\"1\"/><rect x=\"6\" y=\"3\" width=\"1\" height=\"1\"/><rect x=\"1\" y=\"4\" width=\"6\" height=\"1\"/><rect x=\"1\" y=\"5\" width=\"1\" height=\"1\"/><rect x=\"6\" y=\"5\" width=\"1\" height=\"1\"/><rect x=\"1\" y=\"6\" width=\"6\" height=\"1\"/></svg>Outcomes</button><button aria-expanded=\"true\"><svg class=\"ds-px\" viewBox=\"0 0 8 8\" shape-rendering=\"crispEdges\" aria-hidden=\"true\" fill=\"currentColor\"><rect x=\"1\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"0\" y=\"1\" width=\"7\" height=\"1\"/><rect x=\"1\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"0\" y=\"3\" width=\"2\" height=\"1\"/><rect x=\"3\" y=\"3\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"3\" width=\"2\" height=\"1\"/><rect x=\"1\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"0\" y=\"5\" width=\"7\" height=\"1\"/><rect x=\"1\" y=\"6\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"6\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"6\" width=\"1\" height=\"1\"/></svg>Training</button></nav>",
+      "css": ".ds-px { width: 16px; height: 16px; display: block; flex-shrink: 0; } .ds-deck { display: flex; gap: 12px; } .ds-deck button { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 0; cursor: pointer; background: var(--table); box-shadow: var(--ring-quiet); font: var(--label); letter-spacing: 1px; text-transform: uppercase; color: var(--dim); } .ds-deck button .ds-px { color: var(--cyan); } .ds-deck button:hover, .ds-deck button[aria-expanded=\"true\"] { background: var(--raised); color: var(--ice); box-shadow: 0 0 0 2px var(--ink), 0 0 0 4px var(--cyan); } .ds-deck button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }"
+    },
+    {
+      "name": "Question Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "A question dealt into the hand: suit ring, corner suit icons, clamped question, timer bar.",
+      "html": "<button class=\"ds-card\" style=\"--suit:#9bcf5a\"><span class=\"ds-card-top\"><span class=\"ds-card-suit\"><svg class=\"ds-px\" viewBox=\"0 0 8 8\" shape-rendering=\"crispEdges\" aria-hidden=\"true\" fill=\"currentColor\"><rect x=\"3\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"2\" y=\"1\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"1\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"2\" y=\"3\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"3\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"5\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"6\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"7\" width=\"1\" height=\"1\"/></svg></span><span class=\"ds-card-who\"><b>Settler name</b><small>Role</small></span></span><span class=\"ds-card-q\">The settler's question sits here, clamped to four lines.</span><span class=\"ds-card-foot\"><span class=\"ds-card-state\"></span><span class=\"ds-card-suit\"><svg class=\"ds-px\" viewBox=\"0 0 8 8\" shape-rendering=\"crispEdges\" aria-hidden=\"true\" fill=\"currentColor\"><rect x=\"3\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"2\" y=\"1\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"1\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"2\" y=\"3\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"3\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"5\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"6\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"7\" width=\"1\" height=\"1\"/></svg></span></span><span class=\"ds-timer\"><i style=\"width:60%\"></i></span></button>",
+      "css": ".ds-card { --suit: var(--cyan); position: relative; width: 172px; height: 196px; display: flex; flex-direction: column; gap: 6px; padding: 12px 12px 10px; border: 0; cursor: pointer; text-align: left; background: var(--panel); color: var(--ice); font: 20px/1.15 var(--body); box-shadow: 0 0 0 2px var(--ink), 0 0 0 5px var(--suit), 0 6px 0 5px var(--plinth); transition: translate .2s steps(4, end); } .ds-card:hover, .ds-card:focus-visible { translate: 0 -16px; } .ds-card:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; } .ds-card-top { display: flex; align-items: flex-start; gap: 8px; } .ds-card-suit { display: flex; gap: 3px; color: var(--suit); flex-shrink: 0; } .ds-card-suit .ds-px { width: 18px; height: 18px; display: block; } .ds-card-who b { display: block; font-weight: 400; font-size: 21px; line-height: 1; } .ds-card-who small { color: var(--mute); font-size: 17px; } .ds-card-q { font-size: 19px; line-height: 20px; max-height: 80px; color: var(--dim); overflow: hidden; } .ds-card-foot { margin-top: auto; display: flex; align-items: flex-end; justify-content: space-between; min-height: 18px; } .ds-card-foot .ds-card-suit { rotate: 180deg; } .ds-card-state { font-size: 17px; line-height: 1; color: var(--cyan); } .ds-timer { display: block; height: 6px; background: var(--ink); } .ds-timer i { display: block; height: 100%; background: var(--suit); }"
+    },
+    {
+      "name": "Critical Card",
+      "kind": "card",
+      "refersTo": "card-critical",
+      "description": "A critical question: coral overrides the suit, the face darkens to Critical Face, a warning icon joins the corner.",
+      "html": "<button class=\"ds-card-crit\"><span class=\"ds-cc-top\"><span class=\"ds-cc-suit\"><svg class=\"ds-px\" viewBox=\"0 0 8 8\" shape-rendering=\"crispEdges\" aria-hidden=\"true\" fill=\"currentColor\"><rect x=\"3\" y=\"0\" width=\"2\" height=\"1\"/><rect x=\"3\" y=\"1\" width=\"2\" height=\"1\"/><rect x=\"3\" y=\"2\" width=\"2\" height=\"1\"/><rect x=\"3\" y=\"3\" width=\"2\" height=\"1\"/><rect x=\"3\" y=\"4\" width=\"2\" height=\"1\"/><rect x=\"3\" y=\"6\" width=\"2\" height=\"1\"/><rect x=\"3\" y=\"7\" width=\"2\" height=\"1\"/></svg><svg class=\"ds-px\" viewBox=\"0 0 8 8\" shape-rendering=\"crispEdges\" aria-hidden=\"true\" fill=\"currentColor\"><rect x=\"3\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"2\" y=\"1\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"1\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"2\" y=\"3\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"3\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"5\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"6\" width=\"1\" height=\"1\"/><rect x=\"4\" y=\"7\" width=\"1\" height=\"1\"/></svg></span><span class=\"ds-cc-who\"><b>Settler name</b><small>Role</small></span></span><span class=\"ds-cc-q\">A critical question sits here.</span><span class=\"ds-cc-timer\"><i style=\"width:30%\"></i></span></button>",
+      "css": ".ds-card-crit { width: 172px; height: 196px; display: flex; flex-direction: column; gap: 6px; padding: 12px 12px 10px; border: 0; cursor: pointer; text-align: left; background: #24152a; color: var(--ice); font: 20px/1.15 var(--body); box-shadow: 0 0 0 2px var(--ink), 0 0 0 5px var(--coral), 0 6px 0 5px var(--plinth); transition: translate .2s steps(4, end); } .ds-card-crit:hover, .ds-card-crit:focus-visible { translate: 0 -16px; } .ds-card-crit:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; } .ds-cc-top { display: flex; align-items: flex-start; gap: 8px; } .ds-cc-suit { display: flex; gap: 3px; color: var(--coral); flex-shrink: 0; } .ds-cc-suit .ds-px { width: 18px; height: 18px; display: block; } .ds-cc-who b { display: block; font-weight: 400; font-size: 21px; line-height: 1; } .ds-cc-who small { color: var(--mute); font-size: 17px; } .ds-cc-q { font-size: 19px; line-height: 20px; color: var(--dim); } .ds-cc-timer { display: block; height: 6px; margin-top: auto; background: var(--ink); } .ds-cc-timer i { display: block; height: 100%; background: var(--coral); }"
+    },
+    {
+      "name": "Written-Reply Option",
+      "kind": "custom",
+      "refersTo": "option",
+      "description": "A reply the player can play from the dialog: panel row, key cap at left, cyan ring on hover or focus.",
+      "html": "<div class=\"ds-opts\"><button><kbd>1</kbd><span>A written reply the player can play.</span></button><button><kbd>2</kbd><span>Another written reply.</span></button></div>",
+      "css": ".ds-opts { display: flex; flex-direction: column; gap: 10px; } .ds-opts button { display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; text-align: left; padding: 11px 14px 11px 10px; border: 0; cursor: pointer; background: var(--panel); box-shadow: 0 0 0 2px var(--ink), 0 0 0 4px var(--line); font: 20px/1.12 var(--body); color: var(--dim); } .ds-opts kbd { justify-self: center; margin-top: 1px; font: var(--label); text-transform: uppercase; background: var(--ink); color: var(--cyan); padding: 1px 6px; } .ds-opts button:hover, .ds-opts button:focus-visible { background: var(--raised); color: var(--ice); box-shadow: 0 0 0 2px var(--ink), 0 0 0 4px var(--cyan); outline: none; } .ds-opts button:hover kbd, .ds-opts button:focus-visible kbd { background: var(--cyan); color: var(--ink); }"
+    },
+    {
+      "name": "Reply Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "The typed-reply well: ink face, line ring that turns cyan on focus.",
+      "html": "<textarea class=\"ds-reply\" placeholder=\"Say it in your own words\"></textarea>",
+      "css": ".ds-reply { width: 100%; min-height: 92px; padding: 12px 14px; resize: vertical; background: var(--ink); color: var(--ice); caret-color: var(--cyan); border: 0; box-shadow: 0 0 0 2px var(--line); font: 21px/1.15 var(--body); } .ds-reply:focus, .ds-reply:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--cyan); } .ds-reply::placeholder { color: var(--mute); }"
+    },
+    {
+      "name": "Measure Track",
+      "kind": "custom",
+      "refersTo": "chip",
+      "description": "A world measure as ten counted segments in its suit colour, with outcome chips beneath.",
+      "html": "<div class=\"ds-stat\" style=\"--c:#9bcf5a\"><label>Food</label><span class=\"ds-val\">70</span><span class=\"ds-seg\"><b class=\"on\"></b><b class=\"on\"></b><b class=\"on\"></b><b class=\"on\"></b><b class=\"on\"></b><b class=\"on\"></b><b class=\"on\"></b><b></b><b></b><b></b></span></div><div class=\"ds-chips\"><span class=\"ds-chip\">+4 Food</span><span class=\"ds-chip ds-dn\">-2 Health</span></div>",
+      "css": ".ds-stat { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 5px 8px; width: 210px; } .ds-stat label { font: var(--label); letter-spacing: 1px; text-transform: uppercase; color: var(--dim); } .ds-val { font: 22px/.8 var(--body); color: var(--ice); font-variant-numeric: tabular-nums; } .ds-seg { grid-column: 1 / 3; display: flex; gap: 2px; height: 10px; } .ds-seg > b { flex: 1; background: var(--ink); box-shadow: 0 0 0 1px var(--line); } .ds-seg > b.on { background: var(--c, var(--cyan)); box-shadow: 0 0 0 1px var(--ink); } .ds-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; } .ds-chip { font: 17px/1 var(--body); padding: 3px 6px; background: var(--ink); color: var(--good); } .ds-chip.ds-dn { color: var(--coral); }"
+    },
+    {
+      "name": "Compute Tokens",
+      "kind": "custom",
+      "refersTo": "key-cap",
+      "description": "The reply resource as square tokens: charged, half and spent.",
+      "html": "<div class=\"ds-pips\"><i class=\"on\"><svg class=\"ds-px\" viewBox=\"0 0 8 8\" shape-rendering=\"crispEdges\" aria-hidden=\"true\" fill=\"currentColor\"><rect x=\"1\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"0\" y=\"1\" width=\"7\" height=\"1\"/><rect x=\"1\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"0\" y=\"3\" width=\"2\" height=\"1\"/><rect x=\"3\" y=\"3\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"3\" width=\"2\" height=\"1\"/><rect x=\"1\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"0\" y=\"5\" width=\"7\" height=\"1\"/><rect x=\"1\" y=\"6\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"6\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"6\" width=\"1\" height=\"1\"/></svg></i><i class=\"on\"><svg class=\"ds-px\" viewBox=\"0 0 8 8\" shape-rendering=\"crispEdges\" aria-hidden=\"true\" fill=\"currentColor\"><rect x=\"1\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"0\" y=\"1\" width=\"7\" height=\"1\"/><rect x=\"1\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"0\" y=\"3\" width=\"2\" height=\"1\"/><rect x=\"3\" y=\"3\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"3\" width=\"2\" height=\"1\"/><rect x=\"1\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"0\" y=\"5\" width=\"7\" height=\"1\"/><rect x=\"1\" y=\"6\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"6\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"6\" width=\"1\" height=\"1\"/></svg></i><i class=\"half\"><svg class=\"ds-px\" viewBox=\"0 0 8 8\" shape-rendering=\"crispEdges\" aria-hidden=\"true\" fill=\"currentColor\"><rect x=\"1\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"0\" y=\"1\" width=\"7\" height=\"1\"/><rect x=\"1\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"0\" y=\"3\" width=\"2\" height=\"1\"/><rect x=\"3\" y=\"3\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"3\" width=\"2\" height=\"1\"/><rect x=\"1\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"0\" y=\"5\" width=\"7\" height=\"1\"/><rect x=\"1\" y=\"6\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"6\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"6\" width=\"1\" height=\"1\"/></svg></i><i><svg class=\"ds-px\" viewBox=\"0 0 8 8\" shape-rendering=\"crispEdges\" aria-hidden=\"true\" fill=\"currentColor\"><rect x=\"1\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"0\" width=\"1\" height=\"1\"/><rect x=\"0\" y=\"1\" width=\"7\" height=\"1\"/><rect x=\"1\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"2\" width=\"1\" height=\"1\"/><rect x=\"0\" y=\"3\" width=\"2\" height=\"1\"/><rect x=\"3\" y=\"3\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"3\" width=\"2\" height=\"1\"/><rect x=\"1\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"4\" width=\"1\" height=\"1\"/><rect x=\"0\" y=\"5\" width=\"7\" height=\"1\"/><rect x=\"1\" y=\"6\" width=\"1\" height=\"1\"/><rect x=\"3\" y=\"6\" width=\"1\" height=\"1\"/><rect x=\"5\" y=\"6\" width=\"1\" height=\"1\"/></svg></i></div>",
+      "css": ".ds-pips { display: grid; grid-template-columns: repeat(4, 22px); gap: 7px; } .ds-pips i { width: 22px; height: 22px; display: grid; place-items: center; background: var(--ink); box-shadow: 0 0 0 2px var(--line); color: var(--line); } .ds-pips i .ds-px { width: 14px; height: 14px; display: block; } .ds-pips i.on { background: var(--cyan); box-shadow: 0 0 0 2px var(--ink); color: var(--ink); } .ds-pips i.half { background: linear-gradient(90deg, var(--cyan) 50%, var(--ink) 50%); box-shadow: 0 0 0 2px var(--ink); color: transparent; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Pixel Tabletop",
+    "overview": "The screen is a table at night with a pixel board game laid on it. The colony is the board, ring-framed in the centre; its score track runs round the frame in gold pips; the world's measures stand as segmented tracks beside it; the settlers' questions are playing cards fanned along the bottom edge, the most urgent one raised and largest. A pixel sky band sits across the top and carries the lettering, the day and the clock. Nothing here is a panel of a dashboard: every surface is a physical game piece (a board, a card, a slip, a token, a sheet) placed on the table.\n\nEvery piece is built the same way: a square face, a 2px gap of ink, a hard coloured ring, and on the pieces that sit proud of the table a hard plinth beneath. There are no rounded corners, no blurred shadows and no eased motion; things are drawn on a grid and move in steps. Two pixel faces carry all text, Silkscreen for lettering and VT323 for reading, with font smoothing switched off. The canvas board and sky are rendered pixelated and draw their pieces as flat blocks outlined in ink.\n\nColour is semantic and sparing against the navy table. Cyan is the player's own signal, gold is reach and insight, coral is reserved for what is critical or lost, and each question topic owns one suit colour that follows it from the card's ring to its corner icon to its measure track.",
+    "keyCharacteristics": [
+      "One frame recipe for every piece: face, 2px ink gap, hard ring, hard plinth.",
+      "Square everywhere; the radius scale has one step and it is zero.",
+      "Pixel type with smoothing off; Silkscreen only at multiples of 8px.",
+      "Stepped motion (`steps(4, end)`), stepped blinks, no easing curves.",
+      "Quantities are counted pieces: ten-segment tracks, pips, tokens, never smooth bars.",
+      "Authored 8 by 8 pixel icons that inherit the colour of what they mark.",
+      "A dark-only world (`color-scheme: dark`)."
+    ],
+    "rules": [
+      {
+        "name": "The Three Signals Rule",
+        "body": "Cyan is you, gold is reach and insight, coral is critical or lost. None of the three is ever used as decoration or to mean anything else.",
+        "section": "colors"
+      },
+      {
+        "name": "The Suit Rule",
+        "body": "A topic has exactly one colour, passed down as `--suit` (pieces) or `--c` (tracks), and it colours the ring, the corner icons and the timer together. A critical question overrides its suit with coral; a council question with gold.",
+        "section": "colors"
+      },
+      {
+        "name": "The Quiet Ring Rule",
+        "body": "A piece that is not asking for anything wears a `line` ring. Colour on a ring is a claim on the player's attention.",
+        "section": "colors"
+      },
+      {
+        "name": "The Eight Grid Rule",
+        "body": "Silkscreen is set only at multiples of 8px (16, 24, 32, 40, 48, 64); that is its pixel grid, and off it the letters smear.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Weight Rule",
+        "body": "Weight is always 400. Emphasis inside running text is a change of colour (ice inside dim, gold for a count), never bold.",
+        "section": "typography"
+      },
+      {
+        "name": "The Counted Numbers Rule",
+        "body": "Any number that changes while you watch uses tabular numerals.",
+        "section": "typography"
+      },
+      {
+        "name": "The Frame Rule",
+        "body": "Every frame is face, 2px ink gap, hard ring. Frames are drawn with `box-shadow` spread, never with `border`.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Plinth Rule",
+        "body": "Only pieces that stand on the table cast a plinth, and the plinth is always straight down, solid, and in `plinth`. A pressed button sinks 2px and its plinth shortens by the same.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Height Rule",
+        "body": "Ring width is height: 4px lies flat, 5px stands, 6px is lifted above everything.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do build every new piece from the frame recipe: face, 2px ink gap, hard ring via `box-shadow` spread, and a straight-down `plinth` drop only if it stands on the table.",
+      "Do pick ring width by height: 4px flat, 5px standing, 6px lifted.",
+      "Do set Silkscreen at 16, 24, 32, 40, 48 or 64px, uppercase, tracked 1px to 2px; set everything read in VT323.",
+      "Do carry a topic's colour through `--suit` so ring, icons and timer change together.",
+      "Do show quantities as counted square cells: ten segments, pips or tokens.",
+      "Do draw new icons on the 8 by 8 grid in `public/src/icons.js`, one weight, inheriting `currentColor`.",
+      "Do move things with `steps()` timing over 0.2s to 0.3s and blink with two-step loops; keep the reduced-motion collapse.",
+      "Do keep text on the table at `ice`, `dim` or `mute`, and text on cyan or gold faces at `ink`."
+    ],
+    "donts": [
+      "Don't round a corner. There is no radius in this system.",
+      "Don't blur a shadow or use a glow; depth is ring width and a hard plinth.",
+      "Don't draw a frame with `border`; rings must not take layout space.",
+      "Don't ease or spring motion; nothing in the build uses a curve.",
+      "Don't use coral for anything that is not critical, failing or lost, or gold for anything that is not reach, insight, council or the Ark.",
+      "Don't use bold; the faces ship in one weight and emphasis is colour.",
+      "Don't set Silkscreen off its 8px grid, or use it for running text.",
+      "Don't use a smooth progress bar where a counted track would do.",
+      "Don't bring in an icon font, emoji or outline icon set; icons are the authored pixel set.",
+      "Don't add a light theme; the world is declared dark-only."
+    ]
+  }
+}

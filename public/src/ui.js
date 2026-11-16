@@ -1,175 +1,239 @@
-// HUD, inbox, reply dialog, training, crises, overlays and the main loop.
+// The table: sky, measures, board, tool deck and the hand of question cards, plus every dialog and the main loop.
 import * as G from './game.js';
 import { Q, CATS, STATS, TOPICS, STAGES, PLANETS, STAT_LABEL, STAT_COLOR, DIRECTIVES, UNLOCKS, UP_COST, UP_LEVELS } from './content.js';
-import { render, pickQuery, addFloat, resetView } from './render.js';
+import { render, renderSky, pickQuery, addFloat, resetView } from './render.js';
 import { openPuzzle } from './puzzle.js';
 import { localJudge } from './judge.js';
+import { icon, hydrate } from './icons.js';
 import * as Judge from './settings.js';
 
 const $ = s => document.querySelector(s);
 const cv = $('#c'), ctx = cv.getContext('2d');
+const sky = $('#skyc'), sctx = sky.getContext('2d');
 const fmt = n => Math.round(n).toLocaleString('en-US');
-let modalQ = null, overlayOpen = false, W = 0, H = 0;
+let modalQ = null, overlayOpen = false, W = 0, H = 0, PX = 3;
+hydrate();
 
 // Each player picks how their typed replies are judged: text matching, free Gemini, or their own Claude key.
 let warned = '';
 await Judge.loadStatus();
 function openJudge() { closeModal(); Judge.open($('#settings'), () => { warned = ''; toast({ who: 'Judging updated', text: `Typed replies are now judged by ${Judge.label()}.`, fx: {}, good: true }); setJudgeBtn(); }); }
-function setJudgeBtn() { set($('#judgeBtn'), `Judging: ${Judge.label()}`); }
+function setJudgeBtn() { $('#judgeBtn').title = `Typed replies are judged by ${Judge.label()}`; }
 
 // ── text helpers ──
+// a segmented track: ten pips, lit by tenths
+const SEG = '<b></b>'.repeat(10);
+const fill = (el, pct) => { const n = Math.max(0, Math.min(10, Math.round(pct / 10))); [...el.children].forEach((b, i) => b.classList.toggle('on', i < n)); };
+const segHTML = pct => { const n = Math.max(0, Math.min(10, Math.round(pct / 10))); return '<b class="on"></b>'.repeat(n) + '<b></b>'.repeat(10 - n); };
 const set = (el, v) => { if (el.textContent !== String(v)) el.textContent = v; };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const costText = c => (c % 1 ? (c > 1 ? Math.floor(c) + '½' : '½') : String(c));
 function chips(fx) {
-  return Object.entries(fx).filter(([, v]) => v).map(([k, v]) => {
+  const c = Object.entries(fx).filter(([, v]) => v).map(([k, v]) => {
     const n = Math.abs(v) < 1 ? v.toFixed(1) : Math.round(v);
     return `<span class="chip ${v > 0 ? 'up' : 'dn'}">${v > 0 ? '+' : ''}${n} ${STAT_LABEL[k]}</span>`;
   }).join('');
+  return c ? `<div class="chips">${c}</div>` : '';
 }
-const who = q => { const p = G.person(q.pid); return p ? { name: p.name, first: p.name.split(' ')[0], role: p.role, trust: p.trust } : { name: 'The Council', first: 'the council', role: 'decision for everyone', trust: null }; };
+const who = q => { const p = G.person(q.pid); return p ? { name: p.name, first: p.name.split(' ')[0], role: p.role, trust: p.trust } : { name: 'The Council', first: 'the council', role: 'deciding for everyone', trust: null }; };
+const suitOf = q => (q.pid < 0 ? 'council' : Q[q.k].c);
+const suitColor = q => (q.crit ? 'var(--coral)' : q.pid < 0 ? 'var(--gold)' : CATS[Q[q.k].c].color);
 
-// ── top bar ──
-const SHORT = { food: 'Food', health: 'Health', eco: 'Eco', know: 'Know', bond: 'Bond', infra: 'Infra', safe: 'Safety' };
-$('#stats').innerHTML = STATS.map(k => `<div class="stat" id="s-${k}"><label title="${STAT_LABEL[k]}"><span class="full">${STAT_LABEL[k]}</span><span class="short">${SHORT[k]}</span></label><div class="bar"><i style="background:${STAT_COLOR[k]}"></i></div><span class="val"></span></div>`).join('');
+// ── the measures ──
+const SHORT = { food: 'Food', health: 'Health', eco: 'Ecology', know: 'Knowledge', bond: 'Cohesion', infra: 'Infra', safe: 'Safety' };
+const TINY = { food: 'Food', health: 'Health', eco: 'Eco', know: 'Know', bond: 'Bond', infra: 'Infra', safe: 'Safety' };
+$('#stats').innerHTML = STATS.map(k => `<div class="stat" id="s-${k}" style="--c:${STAT_COLOR[k]}"><label title="${STAT_LABEL[k]}"><span class="full">${SHORT[k]}</span><span class="short">${TINY[k]}</span></label><span class="val"></span><span class="seg">${SEG}</span></div>`).join('');
 $('#speed').addEventListener('click', e => { const b = e.target.closest('button'); if (b) G.S.speed = +b.dataset.s; });
 
+let trackSig = '', trackPips = [];
 function hud() {
   const S = G.S, st = STAGES[S.stage], P = PLANETS[S.planet % PLANETS.length];
-  set($('#role'), `${st.title} · ${P.name}${S.legacy ? ' · world ' + (S.legacy + 1) : ''}`);
+  set($('#role'), `${st.title} of ${P.name}${S.legacy ? ', world ' + (S.legacy + 1) : ''}`);
   set($('#day'), `Day ${S.day}`);
   for (const k of STATS) {
     const el = $('#s-' + k), v = S.stats[k];
-    el.querySelector('i').style.width = v + '%';
+    fill(el.querySelector('.seg'), v);
     set(el.querySelector('.val'), Math.round(v));
     el.classList.toggle('low', v < 25);
   }
-  for (const b of $('#speed').children) b.classList.toggle('on', +b.dataset.s === S.speed);
+  for (const b of $('#speed').children) { b.classList.toggle('on', +b.dataset.s === S.speed); b.setAttribute('aria-pressed', +b.dataset.s === S.speed); }
 
-  const r = G.reach(), goal = st.goal;
-  set($('#rStage'), st.name);
-  set($('#rNow'), fmt(r)); set($('#rGoal'), fmt(goal));
-  $('#rBar').style.width = Math.min(100, r / goal * 100) + '%';
-  set($('#rPop'), fmt(S.pop)); set($('#rAd'), Math.round(G.adoption()));
-  set($('#rNext'), S.stage < 4 ? `Next: ${STAGES[S.stage + 1].name}` : S.ark.active ? 'The Ark is under construction' : 'Next: the long question');
+  // reach: a score track running clockwise round the board's frame, longer at every stage
+  const r = G.reach(), goal = st.goal, n = 28 + S.stage * 8;
+  const bw = cv.clientWidth || 1, bh = cv.clientHeight || 1;
+  const across = Math.max(2, Math.round(n * bw / (2 * (bw + bh)))), down = Math.max(1, Math.round((n - 2 * across) / 2));
+  if (across + ':' + down !== trackSig) {
+    trackSig = across + ':' + down;
+    const [t, rt, b, l] = $('#track').children;
+    t.innerHTML = b.innerHTML = '<i></i>'.repeat(across);
+    rt.innerHTML = l.innerHTML = '<i></i>'.repeat(down);
+    trackPips = [...t.children, ...rt.children, ...b.children, ...l.children];   // clockwise from the top-left corner
+  }
+  const total = trackPips.length, lit = Math.min(total, Math.floor(r / goal * total));
+  trackPips.forEach((p, i) => { p.classList.toggle('on', i < lit); p.classList.toggle('goal', i === total - 1 && lit < total); });
+  const rt = fmt(r), rn = $('#rNow');
+  set(rn, rt); rn.classList.toggle('mid', rt.length === 3 || rt.length === 4); rn.classList.toggle('long', rt.length > 4);
+  set($('#rGoal'), fmt(goal));
+  set($('#rStage'), st.name); set($('#rPop'), fmt(S.pop));
+  set($('#rNext'), S.stage < 4 ? `Next: ${STAGES[S.stage + 1].name}` : S.ark.active ? 'The Ark is being built' : 'Next: the long question');
 
-  $('#ark').hidden = !S.ark.active;
+  $('#ark').hidden = !S.ark.active || !!S.crisis;
   if (S.ark.active) {
-    $('#arkBar').style.width = S.ark.progress + '%';
+    fill($('#arkBar'), S.ark.progress);
     set($('#arkSub'), S.ark.progress >= 100 ? 'Ready. Eleven light-years to go.' : `${Math.round(S.ark.progress)}% built. Knowledge and cohesion speed the work.`);
     $('#launch').hidden = S.ark.progress < 100;
   }
 
-  // crisis banner
+  // the crisis event card on the board
   const C = S.crisis, def = G.crisisDef();
   $('#crisis').hidden = !C;
   if (C) {
     set($('#crName'), def.name);
     $('#crisis').classList.toggle('cut', C.phase === 'cut');
-    set($('#crSub'), C.phase === 'cut' ? `Link down for ${Math.floor(C.cutT)}s. Trust is draining.` : C.left > 0 ? `Emergency: ${Math.ceil(C.left)}s. Questions marked ! are life or death.` : 'Easing. Finish what is in the inbox.');
+    set($('#crSub'), C.phase === 'cut' ? `Link down for ${Math.floor(C.cutT)}s. Trust is draining.` : C.left > 0 ? `${Math.ceil(C.left)}s of emergency. Red cards are life or death.` : 'Easing. Play what is left in your hand.');
     $('#relink').hidden = C.phase !== 'cut';
   }
 
+  // compute tokens
   const max = G.maxCompute(), pips = $('#pips');
-  if (pips.children.length !== max) pips.innerHTML = '<i></i>'.repeat(max);
+  if (pips.children.length !== max) pips.innerHTML = `<i>${icon('compute')}</i>`.repeat(max);
   [...pips.children].forEach((p, i) => {
     p.classList.toggle('on', i < Math.floor(S.compute));
     p.classList.toggle('half', i === Math.floor(S.compute) && S.compute % 1 >= 0.5);
   });
-  set($('#cNote'), G.cut() ? 'offline' : S.compute < max ? 'regenerating' : 'full');
+  set($('#cNote'), G.cut() ? 'Offline' : S.compute < max ? 'Recharging' : 'Full');
   set($('#nInsight'), S.insight || '');
 
   pumpJudges();
-  inbox();
+  hand();
 }
 
-// ── inbox ──
-let inboxSig = '';
-function inbox() {
-  const S = G.S, box = $('#inbox'), dark = G.cut();
-  const sig = (dark ? 'x' : '') + S.queries.map(q => q.id + (q.agentAt ? 'a' : '') + (q.proc ? 'p' : '')).join(',');
-  if (sig !== inboxSig) {
-    inboxSig = sig;
-    const mine = S.queries.filter(q => !q.agentAt && !q.proc).length;
-    set($('#nInbox'), dark ? '' : mine || '');
-    const sorted = [...S.queries].sort((a, b) => (b.crit - a.crit) || (a.ttl - b.ttl));
-    box.innerHTML = (dark ? `<div class="offline"><b>No connection</b><p>Nobody can reach you, and you cannot answer. Restore the link first.</p><button class="primary small" data-relink>Restore the link</button></div>` : '') +
-      (sorted.length ? sorted.map(q => {
-        const t = Q[q.k], c = CATS[t.c], p = who(q);
-        const tag = q.proc ? '<em class="esc">processing your reply… <span class="pt"></span></em>' : q.agentAt ? '<em>sub-agent replying…</em>' : q.esc ? '<em class="esc">escalated to you</em>' : '';
-        return `<button class="q${q.agentAt || dark ? ' auto' : ''}${q.pid < 0 ? ' council' : ''}${q.crit ? ' crit' : ''}" data-id="${q.id}" style="--c:${q.crit ? 'var(--bad)' : c.color}">
-          <span class="qh"><b>${p.name}</b><span class="cat">${q.crit ? 'Critical · ' : ''}${c.label}</span></span>
-          <span class="qt">${t.q}</span>${tag}
-          <span class="ttl"><i></i></span></button>`;
-      }).join('') : dark ? '' : '<p class="empty">Nobody is asking anything right now.<br>People with a <b>?</b> above them have a question.</p>');
+// ── the hand ──
+// On a desktop the hand is a fan centred under the board: the most urgent card in the middle, raised and largest,
+// urgency falling away to both sides, the overlap tightening as the hand grows. On a phone it is a row you swipe.
+const phone = matchMedia('(max-width: 760px)');
+let handSig = null, lastOv = null;
+function hand() {
+  const S = G.S, box = $('#hand'), dark = G.cut(), small = phone.matches;
+  const sorted = [...S.queries].sort((a, b) => (b.crit - a.crit) || ((!!a.agentAt) - (!!b.agentAt)) || (a.ttl - b.ttl));
+  const sig = (dark ? 'x' : '') + (small ? 's' : '') + sorted.map(q => q.id + (q.agentAt ? 'a' : '') + (q.proc ? 'p' : '')).join(',');
+  if (sig !== handSig) {
+    handSig = sig;
+    const lead = dark ? null : sorted.find(q => !q.agentAt && !q.proc);
+    let order = sorted;
+    if (!small && lead) {
+      const left = [], right = [];
+      sorted.filter(q => q !== lead).forEach((q, i) => (i % 2 ? left : right).push(q));
+      order = [...left.reverse(), lead, ...right];
+    }
+    const n = order.length, mid = lead && !small ? order.indexOf(lead) : (n - 1) / 2;
+    box.innerHTML = (dark ? `<div class="offline-card"><b>No connection</b><p>Nobody can reach you, and you cannot answer. Restore the link first.</p><button class="btn btn-crit" data-relink>${icon('link')}Repair link</button></div>` : '') +
+      (n ? order.map((q, i) => {
+        const t = Q[q.k], c = CATS[t.c], p = who(q), d = i - mid;
+        const topic = q.pid < 0 ? 'Council' : c.label;
+        const state = q.proc ? 'Your reply is on its way' : q.agentAt ? 'A sub-agent is answering' : q.esc ? 'Escalated to you' : '';
+        const cls = ['card', q.crit && 'crit', q.pid < 0 && 'council', q.agentAt && 'agent', q.proc && 'proc', dark && 'dark', q === lead && 'lead'].filter(Boolean).join(' ');
+        const rot = small ? 0 : Math.max(-9, Math.min(9, d * 2.2)).toFixed(1), drop = small ? 0 : Math.round(Math.min(14, d * d * 1.2));
+        return `<button class="${cls}" data-id="${q.id}" style="--suit:${suitColor(q)};--r:${rot}deg;--y:${drop}px;animation-delay:${Math.min(i, 6) * 40}ms" aria-label="${q.crit ? 'Critical. ' : ''}${topic}. ${esc(p.name)}, ${esc(p.role)}, asks: ${esc(t.q)}">
+          <span class="card-top"><span class="card-suit">${q.crit ? icon('crit') : ''}${icon(suitOf(q))}</span><span class="card-who"><b>${esc(p.name)}</b><small>${esc(p.role)}</small></span></span>
+          <span class="card-q">${esc(t.q)}</span>
+          <span class="card-foot"><span class="card-state">${state}</span><span class="card-suit">${icon(q.agentAt ? 'agents' : suitOf(q))}</span></span>
+          <span class="timer"><i></i></span></button>`;
+      }).join('') : dark ? '' : '<p class="hand-empty">Nobody is asking anything right now. A sign above someone on the board means they have a question.</p>');
+    lastOv = null;
   }
+  if (!small) {   // tighten the overlap so the whole hand always fits beside the tokens
+    const cards = box.querySelectorAll('.card'), n = cards.length;
+    let natural = 0;
+    for (const el of box.children) natural += el.classList.contains('card') ? (el.classList.contains('lead') ? 228 : 172) : el.offsetWidth + 22;
+    const avail = box.parentElement.clientWidth - (innerWidth >= 1500 ? 88 : 56) - $('.tokens').offsetWidth - 36 - 46;
+    const ov = n > 1 ? Math.max(-150, Math.min(-12, Math.floor((avail - natural) / (n - 1)))) : 0;
+    if (ov !== lastOv) { lastOv = ov; box.style.setProperty('--ov', ov + 'px'); }
+  } else if (lastOv !== 0) { lastOv = 0; box.style.setProperty('--ov', '0px'); }
   for (const q of S.queries) {
     const el = box.querySelector(`[data-id="${q.id}"]`);
     if (!el) continue;
-    const bar = el.querySelector('.ttl i');
-    bar.style.width = Math.max(0, q.ttl / q.max * 100) + '%'; bar.classList.toggle('late', q.ttl < 18);
-    const pt = el.querySelector('.pt');
-    if (pt && q.proc) set(pt, Math.max(0, Math.ceil(q.proc.until - S.t)) + 's');
+    const bar = el.querySelector('.timer i');
+    bar.style.width = Math.max(0, Math.ceil(q.ttl / q.max * 10) * 10) + '%';
+    bar.classList.toggle('late', q.ttl < 18 && !q.proc && !q.agentAt);
+    if (q.proc) set(el.querySelector('.card-state'), `Reply sent · ${Math.max(0, Math.ceil(q.proc.until - S.t))}s`);
   }
 }
-$('#inbox').addEventListener('click', e => {
+// The tools sit in the sky on a desktop and in a row under the board on a phone.
+function placeDeck() {
+  if (phone.matches) $('#table').append($('#deck')); else $('.sky-row').insertBefore($('#deck'), $('.clock'));
+  handSig = null;
+}
+phone.addEventListener('change', placeDeck);
+placeDeck();
+$('#hand').addEventListener('click', e => {
   if (e.target.closest('[data-relink]')) return openLinkPuzzle();
-  const b = e.target.closest('.q'); if (b) openQuery(+b.dataset.id);
+  const b = e.target.closest('.card'); if (b) openQuery(+b.dataset.id);
 });
 
-// ── tabs ──
-const PANES = ['inbox', 'log', 'depts', 'train'];
-$('#tabs').addEventListener('click', e => {
-  const b = e.target.closest('button'); if (!b) return;
-  for (const x of $('#tabs').children) x.classList.toggle('on', x === b);
-  for (const id of PANES) $('#' + id).hidden = id !== b.dataset.t;
+// ── the tool deck and its drawer ──
+const TITLES = { log: 'Outcomes', depts: 'Sub-agents', train: 'Training' };
+let openPane = '';
+function openDrawer(id) {
+  if (openPane === id) return closeDrawer();
+  openPane = id;
+  $('#drawer').hidden = false;
+  set($('#drawerTitle'), TITLES[id]);
+  for (const p of Object.keys(TITLES)) $('#' + p).hidden = p !== id;
+  for (const b of document.querySelectorAll('.deck [data-d]')) b.setAttribute('aria-expanded', b.dataset.d === id);
   redraw();
-});
+}
+function closeDrawer() {
+  openPane = '';
+  $('#drawer').hidden = true;
+  for (const b of document.querySelectorAll('.deck [data-d]')) b.setAttribute('aria-expanded', 'false');
+}
+document.querySelector('.deck').addEventListener('click', e => { const b = e.target.closest('[data-d]'); if (b) openDrawer(b.dataset.d); });
+$('#drawer').addEventListener('click', e => { if (e.target.closest('[data-dclose]')) closeDrawer(); });
 function redraw() {
-  if (!$('#log').hidden) drawLog();
-  if (!$('#depts').hidden) drawDepts();
-  if (!$('#train').hidden) drawTrain();
+  if (openPane === 'log') drawLog();
+  if (openPane === 'depts') drawDepts();
+  if (openPane === 'train') drawTrain();
 }
 
 function drawLog() {
   const L = G.S.log;
   $('#log').innerHTML = L.length ? L.map(e => `<div class="entry ${e.good ? 'good' : 'bad'}">
-    <div class="eh"><b>${e.who}</b><span>Day ${e.day}${e.crit ? ' · critical' : ''}${e.by === 'agent' ? ' · sub-agent' : e.by === 'typed' ? ' · typed' : ''}${e.insight ? ` · +${e.insight} insight` : ''}</span></div>
-    ${e.reply ? `<p class="said">You said: ${esc(e.reply)}</p>` : ''}<p>${esc(e.text)}</p><div>${chips(e.fx)}</div></div>`).join('') : '<p class="empty">What your replies lead to will be recorded here.</p>';
+    <div class="eh"><b>${esc(e.who)}</b><span>Day ${e.day}${e.crit ? ' · critical' : ''}${e.by === 'agent' ? ' · sub-agent' : e.by === 'typed' ? ' · typed' : ''}${e.insight ? ` · +${e.insight} insight` : ''}</span></div>
+    ${e.reply ? `<p class="said">You said: ${esc(e.reply)}</p>` : ''}<p>${esc(e.text)}</p>${chips(e.fx)}</div>`).join('') : '<p class="empty">What your answers lead to is recorded here.</p>';
 }
 
 function drawDepts() {
   const S = G.S, slots = G.SLOTS[S.stage], box = $('#depts');
-  if (!slots) { box.innerHTML = `<p class="empty">Sub-agents unlock when the settlement becomes a <b>City</b>.<br>Until then, every question comes to you.</p>`; return; }
-  box.innerHTML = `<p class="note">Sub-agents in use: <b>${G.slotsUsed()} / ${slots}</b>. Each answers its area for you, without spending your compute. They are right most of the time, escalate what they doubt, and never touch critical questions.</p>` +
+  if (!slots) { box.innerHTML = `<p class="empty">Sub-agents arrive when the settlement becomes a City. Until then, every question comes to you.</p>`; return; }
+  box.innerHTML = `<p class="note">Sub-agents in use: <b>${G.slotsUsed()} of ${slots}</b>. Each answers one area for you without spending compute. They are right most of the time, pass you what they doubt, and never touch critical questions.</p>` +
     TOPICS.map(c => {
       const d = S.depts[c];
-      return `<div class="dept" style="--c:${CATS[c].color}"><div class="dh"><b>${CATS[c].dept}</b></div>
-        <select data-c="${c}"><option value="">You answer these yourself</option>${Object.entries(DIRECTIVES).map(([k, v]) => `<option value="${k}"${d === k ? ' selected' : ''}>Sub-agent: ${v.label}</option>`).join('')}</select>
+      return `<div class="dept" style="--suit:${CATS[c].color}"><div class="dh"><b>${icon(c)}${CATS[c].dept}</b></div>
+        <select data-c="${c}" aria-label="${CATS[c].dept}"><option value="">You answer these yourself</option>${Object.entries(DIRECTIVES).map(([k, v]) => `<option value="${k}"${d === k ? ' selected' : ''}>Sub-agent: ${v.label}</option>`).join('')}</select>
         <small>${d ? DIRECTIVES[d].desc : ''}</small></div>`;
     }).join('');
 }
 $('#depts').addEventListener('change', e => {
   const s = e.target.closest('select'); if (!s) return;
-  if (!G.setDept(s.dataset.c, s.value)) toast({ who: 'No free sub-agent', text: 'All slots are in use. Free one from another department first.', fx: {}, good: false });
-  inboxSig = ''; drawDepts();
+  if (!G.setDept(s.dataset.c, s.value)) toast({ who: 'No free sub-agent', text: 'All slots are in use. Free one from another area first.', fx: {}, good: false });
+  handSig = ''; drawDepts();
 });
 
-// ── training ──
 function drawTrain() {
   const S = G.S;
-  $('#train').innerHTML = `<p class="note">Insight: <b class="ins">${S.insight}</b>. You earn it when a reply of yours turns out well (double for critical questions), when the settlement grows, and when a crisis is survived. Spend it to know a topic better.</p>` +
+  $('#train').innerHTML = `<p class="note">You have <b>${S.insight} insight</b>. You earn it when an answer of yours turns out well (double for critical questions), when the settlement grows, and when a crisis passes. Spend it to know a topic better.</p>` +
     TOPICS.map(c => {
       const lvl = S.know[c], next = UP_LEVELS[lvl], price = UP_COST[lvl];
-      return `<div class="dept" style="--c:${CATS[c].color}">
-        <div class="dh"><b>${CATS[c].label}</b><span class="lv">${[0, 1, 2].map(i => `<i class="${i < lvl ? 'on' : ''}"></i>`).join('')}</span></div>
-        ${next ? `<small><b>${next.name}.</b> ${next.desc}</small><button class="train" data-up="${c}" ${S.insight >= price ? '' : 'disabled'}>Train · ${price} insight</button>`
+      return `<div class="dept" style="--suit:${CATS[c].color}">
+        <div class="dh"><b>${icon(c)}${CATS[c].label}</b><span class="lv" aria-label="Level ${lvl} of 3">${[0, 1, 2].map(i => `<i class="${i < lvl ? 'on' : ''}"></i>`).join('')}</span></div>
+        ${next ? `<small><b>${next.name}.</b> ${next.desc}</small><button class="btn btn-gold train" data-up="${c}" ${S.insight >= price ? '' : 'disabled'}>${icon('insight')}Train for ${price}</button>`
                : '<small>Fully trained.</small>'}</div>`;
     }).join('');
 }
 $('#train').addEventListener('click', e => { const b = e.target.closest('[data-up]'); if (b && G.upgrade(b.dataset.up)) drawTrain(); });
 
-// ── reply dialog ──
+// ── the played card: the question dialog ──
 function openQuery(id) {
   const q = G.S.queries.find(x => x.id === id);
   if (!q || overlayOpen) return;
@@ -182,33 +246,39 @@ function drawModal(error = '', draft = '') {
   const S = G.S, q = modalQ;
   const t = Q[q.k], c = CATS[t.c], p = who(q), cw = G.cost(q), ct = G.cost(q, true);
   const canW = S.compute >= cw, canT = S.compute >= ct, busy = G.processing(), flag = G.flagged(q);
-  $('#modal').innerHTML = `<div class="dialog${q.crit ? ' critd' : ''}" style="--c:${q.crit ? 'var(--bad)' : c.color}">
-    <div class="mh"><span class="cat">${q.crit ? 'Critical · ' : ''}${c.label}</span><b>${p.name}</b><span class="mrole">${p.role}</span>
-      ${p.trust === null ? '' : `<span class="mtrust">trusts you ${Math.round(p.trust)}%</span>`}</div>
-    <blockquote>${t.q}</blockquote>
+  $('#modal').innerHTML = `<div class="dialog${q.crit ? ' critd' : ''}" role="dialog" aria-modal="true" aria-labelledby="qwho" style="--suit:${suitColor(q)}">
+    <div class="mh"><span class="suit">${icon(q.crit ? 'crit' : suitOf(q))}</span><b id="qwho">${esc(p.name)}</b><span class="mrole">${esc(p.role)}</span>
+      <span class="cat">${q.crit ? 'Critical' : q.pid < 0 ? 'Council' : c.label}</span>
+      ${p.trust === null ? '' : `<span class="mtrust">Trusts you<span class="seg">${segHTML(p.trust)}</span></span>`}</div>
+    <blockquote>${esc(t.q)}</blockquote>
     ${q.crit ? `<p class="warn">Lives may depend on this. ${Math.ceil(q.ttl)}s before it is too late, and an unanswered critical question hurts the world.</p>` : ''}
-    ${q.agentAt ? '<p class="warn">A sub-agent is about to answer this. Reply yourself to take it over.</p>' : ''}
-    <label>Type your own reply <span class="lcost">${costText(ct)} compute · takes ${G.PROC}s to process</span></label>
-    <textarea id="reply" maxlength="600" rows="3" placeholder="${busy ? 'Another typed reply is still being processed.' : `Say it to ${p.first} in your own words…`}" ${canT && !busy ? '' : 'disabled'}></textarea>
-    <div class="sendrow"><span class="err">${error}</span>
+    ${q.agentAt ? '<p class="warn">A sub-agent is about to answer this. Answer it yourself to take it over.</p>' : ''}
+    <label for="reply">Say it in your own words <span class="lcost">${costText(ct)} compute · ${G.PROC}s to arrive</span></label>
+    <textarea id="reply" maxlength="600" rows="3" placeholder="${busy ? 'Another typed reply is still on its way.' : `What do you tell ${esc(p.first)}?`}" ${canT && !busy ? '' : 'disabled'}></textarea>
+    <div class="sendrow"><span class="err">${esc(error)}</span>
       <span class="hintline">Judged by ${Judge.label()} · <button class="link" data-judge>change</button></span>
-      <button class="primary small" data-send ${canT && !busy ? '' : 'disabled'}>Send <kbd>Enter</kbd></button></div>
-    <label>Or pick a written reply <span class="lcost">${costText(cw)} compute · immediate</span></label>
-    <div class="opts">${q.order.map((oi, i) => `<button data-o="${oi}" ${canW ? '' : 'disabled'} class="${oi === flag ? 'risky' : ''}"><kbd>${i + 1}</kbd><span>${t.o[oi][0]}${oi === flag ? '<em class="flag">Your training flags this as the likeliest to do harm.</em>' : ''}</span></button>`).join('')}</div>
-    <div class="mf">${canT ? `You have ${costText(S.compute)} compute.` : `<span class="warn">Not enough compute. Close this and let it regenerate.</span>`}
-      <button class="ghost" data-close>Decide later (Esc)</button></div></div>`;
+      <button class="btn btn-primary" data-send ${canT && !busy ? '' : 'disabled'}>Send <kbd>Enter</kbd></button></div>
+    <span class="lbl">Or play a written reply <span class="lcost">${costText(cw)} compute · lands now</span></span>
+    <div class="opts">${q.order.map((oi, i) => `<button data-o="${oi}" ${canW ? '' : 'disabled'} class="${oi === flag ? 'risky' : ''}"><kbd>${i + 1}</kbd><span>${esc(t.o[oi][0])}${oi === flag ? '<em class="flag">Your training flags this as the likeliest to do harm.</em>' : ''}</span></button>`).join('')}</div>
+    <div class="mf"><span>${canT ? `You have ${costText(S.compute)} compute.` : '<span class="warn">Not enough compute yet. Put the card back and let it recharge.</span>'}</span>
+      <button class="btn btn-ghost" data-close>Back to the hand <kbd>Esc</kbd></button></div></div>`;
   $('#modal').hidden = false;
   const ta = $('#reply');
   ta.value = draft;
   if (!ta.disabled) ta.focus();
+  else $('#modal [data-o]:not(:disabled), #modal [data-close]').focus();
 }
-function closeModal() { modalQ = null; $('#modal').hidden = true; }
+function closeModal() {
+  const had = modalQ;
+  modalQ = null; $('#modal').hidden = true;
+  if (had) { const c = $(`#hand [data-id="${had.id}"]`); if (c) c.focus({ preventScroll: true }); }
+}
 
 function sendReply() {
   const ta = $('#reply'), q = modalQ, reply = ta.value.trim();
   if (!q || !reply) return;
-  if (G.submitTyped(q.id, reply)) { inboxSig = ''; return closeModal(); }
-  drawModal(G.processing() ? 'One typed reply is already being processed.' : 'Not enough compute.', reply);
+  if (G.submitTyped(q.id, reply)) { handSig = ''; return closeModal(); }
+  drawModal(G.processing() ? 'One typed reply is already on its way.' : 'Not enough compute.', reply);
 }
 
 $('#modal').addEventListener('click', e => {
@@ -219,7 +289,7 @@ $('#modal').addEventListener('click', e => {
   if (b && modalQ && G.answer(modalQ.id, +b.dataset.o)) closeModal();
 });
 
-// Get a ruling for every typed reply that is being processed. The simulation applies it when the processing time is up.
+// Get a ruling for every typed reply that is on its way. The simulation applies it when the processing time is up.
 const inflight = new Set();
 function pumpJudges() {
   for (const q of G.S.queries) {
@@ -260,84 +330,91 @@ function openLinkPuzzle() {
   if (!G.cut() || overlayOpen) return;
   closeModal();
   openPuzzle($('#puzzle'), S.crisis.puzzle, S.stage >= 2, () => G.restoreLink());
+  hydrate($('#puzzle'));
 }
 $('#relink').onclick = openLinkPuzzle;
 
-// ── toasts ──
+// ── outcome slips on the board ──
 function toast(e) {
   const el = document.createElement('div');
   el.className = 'toast ' + (e.good ? 'good' : 'bad');
-  el.innerHTML = `<b>${e.who}</b><p>${esc(e.text)}</p><div>${chips(e.fx)}</div>`;
+  el.innerHTML = `<b>${esc(e.who)}</b><p>${esc(e.text)}</p>${chips(e.fx)}`;
   const box = $('#toasts');
   box.prepend(el);
   while (box.children.length > 3) box.lastChild.remove();
   setTimeout(() => el.remove(), 11000);
 }
 
-// ── overlays ──
-function overlay(html, label, cb) {
+// ── sheets: intro, stage, crisis, game over ──
+function overlay(html, label, cb, tone = '') {
   overlayOpen = true; closeModal(); $('#puzzle').hidden = true;
-  $('#overlay').innerHTML = `<div class="sheet">${html}<button class="primary">${label}</button></div>`;
+  $('#overlay').innerHTML = `<div class="sheet ${tone}" role="dialog" aria-modal="true">${html}<button class="btn btn-primary">${label}</button></div>`;
   $('#overlay').hidden = false;
-  $('#overlay').querySelector('.primary').onclick = () => { $('#overlay').hidden = true; overlayOpen = false; cb && cb(); };
+  const b = $('#overlay .btn');
+  b.focus();
+  b.onclick = () => { $('#overlay').hidden = true; overlayOpen = false; cb && cb(); };
 }
+const rule = (i, html) => `<li>${icon(i)}<span>${html}</span></li>`;
 function intro() {
   const S = G.S, P = PLANETS[S.planet % PLANETS.length];
-  if (S.legacy) return overlay(`<small>World ${S.legacy + 1}</small><h1>${P.name}</h1>
+  if (S.legacy) return overlay(`<h1>${P.name}</h1><p class="meta">World ${S.legacy + 1} · population 24</p>
     <p>Eleven light-years later, twenty-four people wake under a new sky. They remember you, and they start out trusting you a little more than the last ones did.</p>
     <p>This world is harsher, and there is nothing here yet. Begin again.</p>`, 'Wake the town');
-  overlay(`<small>Planet ${P.name} · population 24</small><h1>Steward</h1>
+  overlay(`<h1>Steward</h1><p class="meta">Planet ${P.name} · population 24</p>
     <p>You are the colony ship's assistant, rehoused in a mast at the centre of the only town on a new world.</p>
-    <p>People will bring you questions. What you say changes what they do, and what they do changes the world. Help them well and more of them will rely on you, the town will grow, and you will be trusted with more of it. Fail them and the world dies.</p>
-    <ul><li>Click a <b>?</b> on the map, or a question in the inbox, to reply.</li>
-    <li>A written reply costs 1 <b>compute</b> and lands at once. Typing your own costs half, and takes ${G.PROC} seconds to process.</li>
-    <li>A red <b>!</b> is critical. Leave it unanswered and the world pays.</li>
-    <li>Storms, floods and worse will come. Some will cut you off until you repair the link.</li>
-    <li>The pleasing answer and the good answer are not always the same one.</li></ul>`, 'Begin');
+    <p>People bring you questions. What you say changes what they do, and what they do changes the world. Help them well and more of them will rely on you, the town will grow, and you will be trusted with more of it. Fail them and the world dies.</p>
+    <ul class="rules">
+      ${rule('cursor', 'Every question is a <b>card in your hand</b>. Play one, or tap the sign above someone on the board.')}
+      ${rule('compute', 'A written reply costs 1 <b>compute</b> and lands at once. Your own words cost half, and take ' + G.PROC + ' seconds to arrive.')}
+      ${rule('crit', 'A <b>red card</b> is critical. Leave it and the world pays.')}
+      ${rule('link', 'Storms, floods and worse will come. Some cut you off until you <b>repair the link</b>.')}
+      ${rule('judge', 'The pleasing answer and the good answer are not always the same one.')}
+    </ul>`, 'Begin');
 }
 
 G.hooks.outcome = (e, p) => {
-  const fx = Object.entries(e.fx), world = fx.filter(([k]) => k !== 'trust');
-  const main = (world.length ? world : fx).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))[0];
-  if (p && main) addFloat(p.x, p.y - 20, `${main[1] > 0 ? '+' : ''}${Math.round(main[1])} ${STAT_LABEL[main[0]]}`, main[1] > 0 ? '#8fe0a8' : '#ff8a80');
+  const fx = Object.entries(e.fx), world = fx.filter(([k]) => k !== 'trust' && k !== 'pop');
+  const main = (world.length ? world : []).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))[0];
+  if (p && main) addFloat(p.x, p.y - 16, main[1], main[0]);
   if (e.by !== 'agent') toast(e);
   redraw();
 };
 G.hooks.expired = e => { if (modalQ && !G.S.queries.includes(modalQ)) closeModal(); toast(e.crit ? e : { ...e, text: 'Asked, waited, and gave up on you.' }); redraw(); };
 G.hooks.stage = s => {
-  inboxSig = '';
-  overlay(`<small>Reach ${fmt(G.reach())}</small><h1>${STAGES[s].name}</h1><p>You are now <b>${STAGES[s].title}</b>.</p><p>${UNLOCKS[s]}</p>`, 'Continue', redraw);
+  handSig = '';
+  overlay(`<h1>${STAGES[s].name}</h1><p class="meta">${fmt(G.reach())} people rely on you</p><p>You are now <b>${STAGES[s].title}</b>. The board grows, and so does the track around it.</p><p>${UNLOCKS[s]}</p>`, 'Continue', redraw, 'gold');
 };
 G.hooks.crisis = (what, def) => {
-  inboxSig = '';
+  handSig = '';
   if (what === 'start') {
-    overlay(`<small class="alarm">Crisis</small><h1>${def.name}</h1><p>${def.text}</p>
+    overlay(`<h1>${def.name}</h1><p class="meta">Crisis · day ${G.S.day}</p><p>${def.text}</p>
       <p>${def.cut ? 'Until the link is repaired you can hear nobody, the world keeps taking damage, and trust drains with every second you stay dark. When it comes back, they will all ask at once.'
-                   : 'Questions marked <b>!</b> are life or death, and they will not wait long. You will not have the compute to answer everything well. Choose.'}</p>`,
-      def.cut ? 'Repair the link' : 'Answer them', () => { if (def.cut) openLinkPuzzle(); });
-  } else if (what === 'restored') toast({ who: 'Link restored', text: 'The mast is live again. The inbox is about to fill.', fx: {}, good: true });
+                   : 'Red cards are life or death, and they will not wait long. You will not have the compute to answer everything well. Choose.'}</p>`,
+      def.cut ? 'Repair the link' : 'Answer them', () => { if (def.cut) openLinkPuzzle(); }, 'alarm');
+  } else if (what === 'restored') toast({ who: 'Link restored', text: 'The mast is live again. Your hand is about to fill.', fx: {}, good: true });
   else toast({ who: def.name, text: 'It has passed. The town is counting what it kept.', fx: {}, good: true });
   redraw();
 };
 G.hooks.over = o => {
   const S = G.S;
-  overlay(`<small>Day ${S.day} · ${PLANETS[S.planet % PLANETS.length].name}</small><h1>${o.title}</h1><p>${o.text}</p>
-    <p class="dim">You answered ${S.answered} questions and reached a ${STAGES[S.stage].name} of ${fmt(S.pop)}.</p>`, 'Start over', fresh);
+  overlay(`<h1>${o.title}</h1><p class="meta">Day ${S.day} · ${PLANETS[S.planet % PLANETS.length].name}</p><p>${o.text}</p>
+    <p class="dim">You answered ${S.answered} questions and reached a ${STAGES[S.stage].name} of ${fmt(S.pop)}.</p>`, 'Start over', fresh, 'alarm');
 };
 
-function fresh() { G.newGame(); resetView(); inboxSig = ''; $('#toasts').innerHTML = ''; redraw(); intro(); }
+function fresh() { G.newGame(); resetView(); handSig = ''; $('#toasts').innerHTML = ''; redraw(); intro(); }
 $('#judgeBtn').onclick = openJudge;
 setJudgeBtn();
-$('#newgame').onclick = () => overlay('<h1>Start over?</h1><p>The current world will be lost.</p>', 'Yes, start over', fresh);
+$('#newgame').onclick = () => overlay('<h1>Start over?</h1><p class="meta">This cannot be undone</p><p>The current world will be lost.</p>', 'Yes, start over', fresh, 'alarm');
 $('#launch').onclick = () => {
-  if (G.launchArk()) { resetView(); inboxSig = ''; $('#toasts').innerHTML = ''; redraw(); intro(); }
+  if (G.launchArk()) { resetView(); handSig = ''; $('#toasts').innerHTML = ''; redraw(); intro(); }
 };
 
 // ── input ──
-cv.addEventListener('click', e => { const q = pickQuery(e.offsetX, e.offsetY, W, H); if (q) openQuery(q.id); });
-cv.addEventListener('mousemove', e => { cv.style.cursor = pickQuery(e.offsetX, e.offsetY, W, H) ? 'pointer' : 'default'; });
+const boardPoint = e => [e.offsetX / PX, e.offsetY / PX];
+cv.addEventListener('click', e => { const q = pickQuery(...boardPoint(e), W, H); if (q) openQuery(q.id); });
+cv.addEventListener('mousemove', e => { cv.style.cursor = pickQuery(...boardPoint(e), W, H) ? 'pointer' : 'default'; });
 addEventListener('keydown', e => {
-  if (overlayOpen) { if (e.key === 'Enter') $('#overlay .primary').click(); return; }
+  if (overlayOpen) { if (e.key === 'Enter') $('#overlay .btn').click(); return; }
   if (Judge.isOpen()) { if (e.key === 'Escape') Judge.close(); return; }
   if (!$('#puzzle').hidden) { if (e.key === 'Escape') $('#puzzle').hidden = true; return; }
   if (modalQ) {
@@ -350,32 +427,38 @@ addEventListener('keydown', e => {
     if (i >= 0 && i < opts.length) opts[i].click();
     return;
   }
-  if (e.target.tagName === 'SELECT') return;
-  if (e.code === 'Space') { e.preventDefault(); G.S.speed = G.S.speed ? 0 : 1; }
+  if (e.key === 'Escape' && openPane) return closeDrawer();
+  if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space' && e.target.tagName !== 'BUTTON') { e.preventDefault(); G.S.speed = G.S.speed ? 0 : 1; }
   if (e.key === '1') G.S.speed = 1;
   if (e.key === '2') G.S.speed = 2;
   if (e.key === '3') G.S.speed = 4;
 });
 
 // ── loop ──
+// Both canvases render at a fraction of the screen's resolution and are scaled up with hard edges.
+let SW = 0, SH = 0;
 function resize() {
-  const r = cv.parentElement.getBoundingClientRect(), d = devicePixelRatio || 1;
-  if (r.width === W && r.height === H) return;
-  W = r.width; H = r.height;
-  cv.width = W * d; cv.height = H * d;
-  cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  const r = cv.getBoundingClientRect();
+  PX = innerWidth <= 760 ? 2 : 3;
+  const w = Math.max(1, Math.floor(r.width / PX)), h = Math.max(1, Math.floor(r.height / PX));
+  if (w !== W || h !== H) { W = w; H = h; cv.width = W; cv.height = H; }
+  const s = sky.getBoundingClientRect(), sw = Math.max(1, Math.floor(s.width / 4)), sh = Math.max(1, Math.floor(s.height / 4));
+  if (sw !== SW || sh !== SH) { SW = sw; SH = sh; sky.width = SW; sky.height = SH; }
 }
-let last = performance.now();
-function frame(now) {
+let last = performance.now(), dim = null;
+function frame(now, once = false) {
   const real = Math.max(0, Math.min(0.1, (now - last) / 1000)); last = now;   // the first frame's timestamp can precede `last`
   // Reading a question or an announcement pauses the world. Repairing the link does not.
   const paused = modalQ || overlayOpen || Judge.isOpen() || G.S.over || !G.S.speed;
   if (!paused) G.tick(real * G.S.speed);
   resize();
-  ctx.setTransform(devicePixelRatio || 1, 0, 0, devicePixelRatio || 1, 0, 0);
   render(ctx, W, H, real, now);
+  const light = renderSky(sctx, SW, SH, now);
+  const isDim = light < 0.45 || !!G.S.crisis;
+  if (isDim !== dim) { dim = isDim; document.querySelector('.sky').classList.toggle('dim', isDim); }
   hud();
-  requestAnimationFrame(frame);
+  if (!once) requestAnimationFrame(frame);
 }
 
 // Each player's world lives in their own browser. It is saved after every outcome and every day,
@@ -387,4 +470,5 @@ setInterval(() => { if (!G.S.over) G.save(); }, 5000);
 addEventListener('pagehide', () => G.save());
 document.addEventListener('visibilitychange', () => { if (document.hidden) G.save(); });
 window.__steward = G;   // handy for poking at the game from the console
+window.__frame = t => frame(t ?? performance.now(), true);   // draws one frame on demand, for testing in a hidden tab
 requestAnimationFrame(frame);

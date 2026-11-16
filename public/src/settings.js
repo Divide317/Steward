@@ -52,7 +52,7 @@ export function open(el, onSaved) {
       <select id="jMod">${(server.claudeModels.length ? server.claudeModels : Object.keys(CLAUDE_NAMES)).map(k => `<option value="${k}"${s.claudeModel === k ? ' selected' : ''}>${CLAUDE_NAMES[k] || k}</option>`).join('')}</select>`)}
     <p class="hintline">Keys stay in this browser. They are sent only with your own typed replies, to this game's server, which passes them straight to Google or Anthropic and does not store them.</p>
     <div class="mf"><span class="err" id="jErr"></span>
-      <span class="jbtns"><button class="link" data-forget>Forget my keys</button><button class="ghost" data-cancel>Cancel</button><button class="primary small" data-save>Save</button></span></div></div>`;
+      <span class="jbtns"><button class="link" data-forget>Forget my keys</button><button class="btn btn-ghost" data-cancel>Cancel</button><button class="btn btn-primary" data-save>Save</button></span></div></div>`;
   el.querySelector('#jGem').value = s.geminiKey;
   el.querySelector('#jCla').value = s.claudeKey;
   el.hidden = false;

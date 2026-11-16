@@ -1,10 +1,11 @@
 // Reconnection puzzles. When a crisis cuts the mast off, you solve one of these to get the link back.
 //   power / drain : rotate the sections until every tile is joined to the source
 //   relay         : each switch flips itself and its neighbours; get every relay on
+import { icon } from './icons.js';
 
 const INFO = {
-  power: { title: 'Restore the power lines', src: '⚡', text: 'The storm cut the lines to the mast. Click a cable section to turn it. Join every junction to the generator.' },
-  drain: { title: 'Clear the drains', src: '◉', text: 'The relay hut is underwater. Click a pipe section to turn it. Connect every channel to the pump so the water can drain.' },
+  power: { title: 'Restore the power lines', src: icon('infra'), text: 'The storm cut the lines to the mast. Click a cable section to turn it. Join every junction to the generator.' },
+  drain: { title: 'Clear the drains', src: icon('drop'), text: 'The relay hut is underwater. Click a pipe section to turn it. Connect every channel to the pump so the water can drain.' },
   relay: { title: 'Re-phase the relays', src: '', text: 'The quake knocked the relay chain out of phase. Each switch flips itself and its neighbours. Get every relay lit.' },
 };
 
@@ -72,7 +73,7 @@ export function openPuzzle(host, type, hard, onSolved, onClose) {
     <div class="mh"><span class="cat">No connection</span><b>${info.title}</b></div>
     <p class="ptext">${info.text}</p>
     <div class="grid" style="--n:${n}"></div>
-    <div class="mf"><span class="pstat"></span><button class="ghost" data-pclose>Step away</button></div></div>`;
+    <div class="mf"><span class="pstat"></span><button class="btn btn-ghost" data-pclose>Step away</button></div></div>`;
   host.hidden = false;
   const grid = host.querySelector('.grid'), stat = host.querySelector('.pstat');
 

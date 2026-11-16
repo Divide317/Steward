@@ -2,68 +2,87 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1830">
+<meta name="description" content="Steward: you are the AI a new colony relies on. Answer its people, and watch what your words do to their world.">
 <title>Steward</title>
+<link rel="preload" href="fonts/vt323-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/silkscreen-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header id="top">
-  <div class="brand">
-    <span class="mark"></span>
-    <div><b>STEWARD</b><small id="role"></small></div>
-  </div>
-  <div id="stats"></div>
-  <div class="clock">
-    <span id="day"></span>
-    <div id="speed">
-      <button data-s="0" title="Pause (Space)">❚❚</button>
-      <button data-s="1" title="Normal">▶</button>
-      <button data-s="2" title="Fast">▶▶</button>
-      <button data-s="4" title="Faster">▶▶▶</button>
+<header class="sky">
+  <canvas id="skyc" aria-hidden="true"></canvas>
+  <div class="sky-row">
+    <div class="mark">
+      <h1 class="word">Steward</h1>
+      <p id="role" class="role"></p>
+    </div>
+    <nav id="deck" class="deck" aria-label="Your tools">
+      <button data-d="log"><i data-icon="log"></i><span class="full">Outcomes</span><span class="short">Log</span></button>
+      <button data-d="depts"><i data-icon="agents"></i><span class="full">Agents</span><span class="short">Agents</span></button>
+      <button data-d="train"><i data-icon="train"></i><span class="full">Training</span><span class="short">Train</span><em id="nInsight" class="count"></em></button>
+      <button id="judgeBtn"><i data-icon="judge"></i><span class="full">Judging</span><span class="short">Judge</span></button>
+      <button id="newgame" class="quiet" aria-label="New game"><i data-icon="reset"></i><span class="short">New</span></button>
+    </nav>
+    <div class="clock">
+      <span id="day" class="day"></span>
+      <div id="speed" class="speed" role="group" aria-label="Game speed">
+        <button data-s="0" aria-label="Pause (Space)"><i data-icon="pause"></i></button>
+        <button data-s="1" aria-label="Normal speed"><i data-icon="play"></i></button>
+        <button data-s="2" aria-label="Fast"><i data-icon="fast"></i></button>
+        <button data-s="4" aria-label="Fastest"><i data-icon="faster"></i></button>
+      </div>
     </div>
   </div>
 </header>
 
-<main>
-  <section id="world">
-    <canvas id="c"></canvas>
-    <div id="reach" class="card">
-      <label>Reach <span id="rStage"></span></label>
-      <div class="big"><span id="rNow"></span><small> / <span id="rGoal"></span></small></div>
-      <div class="bar"><i id="rBar"></i></div>
-      <div class="sub"><span id="rPop"></span> people · <span id="rAd"></span>% rely on you</div>
-      <div class="sub" id="rNext"></div>
-    </div>
-    <div id="ark" class="card" hidden>
-      <label>The Ark</label>
-      <div class="bar"><i id="arkBar"></i></div>
-      <div class="sub" id="arkSub"></div>
-      <button id="launch" hidden>Launch</button>
-    </div>
-    <div id="crisis" class="card" hidden>
-      <label>Crisis</label>
-      <div class="crname" id="crName"></div>
-      <div class="sub" id="crSub"></div>
-      <button id="relink" hidden>Repair the link</button>
-    </div>
-    <div id="toasts"></div>
+<main id="table" class="table">
+  <section class="measures" aria-label="The world">
+    <div id="stats" class="tracks"></div>
   </section>
 
-  <aside id="side">
-    <div id="compute"><label>Compute</label><div id="pips"></div><small id="cNote"></small></div>
-    <nav id="tabs">
-      <button data-t="inbox" class="on">Inbox <i id="nInbox"></i></button>
-      <button data-t="log">Outcomes</button>
-      <button data-t="depts">Agents</button>
-      <button data-t="train">Training <i id="nInsight"></i></button>
-    </nav>
-    <div id="inbox" class="pane"></div>
-    <div id="log" class="pane" hidden></div>
-    <div id="depts" class="pane" hidden></div>
-    <div id="train" class="pane" hidden></div>
-    <footer><button id="judgeBtn"></button><button id="newgame">New game</button></footer>
-  </aside>
+  <section class="boardwrap" aria-label="The colony">
+    <div id="board" class="board">
+      <div id="track" class="track" aria-hidden="true"><div class="tk tk-t"></div><div class="tk tk-r"></div><div class="tk tk-b"></div><div class="tk tk-l"></div></div>
+      <canvas id="c" aria-label="Map of the colony. Settlers with a question carry a marker; tap one to answer."></canvas>
+      <div id="crisis" class="event" hidden>
+        <i data-icon="crit"></i>
+        <div><b id="crName"></b><span id="crSub"></span></div>
+        <button id="relink" class="btn btn-crit" hidden><i data-icon="link"></i>Repair the link</button>
+      </div>
+      <div id="ark" class="event event-ark" hidden>
+        <i data-icon="ark"></i>
+        <div><b>The Ark</b><span id="arkSub"></span><span class="seg" id="arkBar"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></span></div>
+        <button id="launch" class="btn btn-gold" hidden>Launch</button>
+      </div>
+      <div id="toasts" class="toasts" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section id="reach" class="reach" aria-label="Your reach">
+    <b id="rNow" class="reach-now"></b>
+    <span class="reach-of">of <span id="rGoal"></span> rely on you</span>
+    <span class="reach-stage"><span id="rStage"></span> of <span id="rPop"></span> people</span>
+    <span class="reach-next" id="rNext"></span>
+  </section>
 </main>
+
+<footer class="hand-row">
+  <div class="tokens" aria-label="Compute">
+    <span class="tokens-label">Compute</span>
+    <div id="pips" class="pips"></div>
+    <small id="cNote"></small>
+  </div>
+  <div id="hand" class="hand" aria-label="Questions waiting for you"></div>
+</footer>
+
+<aside id="drawer" class="drawer" hidden aria-labelledby="drawerTitle">
+  <div class="drawer-head"><h2 id="drawerTitle"></h2><button class="icon-btn" data-dclose aria-label="Close"><i data-icon="close"></i></button></div>
+  <div id="log" class="pane" hidden></div>
+  <div id="depts" class="pane" hidden></div>
+  <div id="train" class="pane" hidden></div>
+</aside>
 
 <div id="modal" hidden></div>
 <div id="puzzle" hidden></div>

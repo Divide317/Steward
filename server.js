@@ -9,7 +9,7 @@ const { handle, sharedGemini, GEMINI_MODEL } = require('./lib/judge');
 
 const root = path.join(__dirname, 'public');
 const port = process.env.PORT || 5173;
-const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css' };
+const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.woff2': 'font/woff2', '.txt': 'text/plain' };
 
 function readJson(req) {
   return new Promise(resolve => {
