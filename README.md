@@ -2,11 +2,15 @@
 
 A browser game where you are the AI a new world relies on.
 
+**Play it now: [steward-tan.vercel.app](https://steward-tan.vercel.app)**
+
 You are the colony ship's assistant, rehoused in a mast at the centre of the only town on a new planet. Twenty-four people live there. They bring you questions, what you say changes what they do, and what they do changes the world. Help them well and more of them rely on you, the town grows, and you are trusted with more of it. Fail them and the world dies.
 
 ![Steward in play: the town map, the seven measures along the top and the inbox of residents' questions](docs/screenshot.png)
 
 ## Running it
+
+The quickest way to play is the hosted version at [steward-tan.vercel.app](https://steward-tan.vercel.app). To run it on your own machine:
 
 You need [Node.js](https://nodejs.org) 22 or newer.
 
